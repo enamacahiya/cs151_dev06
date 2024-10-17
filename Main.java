@@ -155,24 +155,30 @@ public class Main extends Application {
 			
 			//Transition button(s) implementation
 			home.setOnAction(event -> primaryStage.setScene(scene));
-			accbtn.setOnAction(event -> primaryStage.setScene(accountPage));
-			returnbtn.setOnAction(event -> primaryStage.setScene(scene));
-			cancelbtn.setOnAction(event -> {
-				primaryStage.setScene(scene);
+			accbtn.setOnAction(event -> {
+				primaryStage.setScene(accountPage);
+				errorlbl.setText("");
 				accNamefld.clear();
 				datepkr.getEditor().clear();
 				balnum.clear();
-				errorlbl.setText("");
 			});
+			returnbtn.setOnAction(event -> primaryStage.setScene(scene));
+			cancelbtn.setOnAction(event -> primaryStage.setScene(scene));
 			savebtn.setOnAction(event -> {
-				if (!accNamefld.getCharacters().isEmpty() && !datepkr.equals(null)) {
-					accNamefld.clear();
-					datepkr.getEditor().clear();
-					balnum.clear();
-					errorlbl.setText("Account Saved! You may return to homepage");
-				}
-				else {
-					errorlbl.setText("Please make sure all info was inputted correctly");
+				try {
+					Double.parseDouble(balnum.getCharacters().toString());
+					if (!accNamefld.getCharacters().isEmpty() && !datepkr.equals(null)
+							&& !balnum.getCharacters().isEmpty()) {
+						accNamefld.clear();
+						datepkr.getEditor().clear();
+						balnum.clear();
+						errorlbl.setText("Account Saved! You may return to homepage");
+					}
+					else {
+						errorlbl.setText("Please make sure all info was inputted correctly");
+					}
+				} catch (Exception e) {
+					errorlbl.setText("Please enter a valid balance");
 				}
 			});
 			

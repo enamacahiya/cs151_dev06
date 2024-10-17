@@ -8,11 +8,13 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
+import javafx.util.converter.DoubleStringConverter;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -57,6 +59,7 @@ public class Main extends Application {
 			Label ballbl = new Label("Opening Balance");
 			ballbl.setFont(normal);
 			TextField balnum = new TextField();
+			balnum.setTextFormatter(new TextFormatter<Double>(new FixedDecimalConverter(2), 0.0));
 			
 			Label errorlbl = new Label("");
 			
@@ -160,7 +163,7 @@ public class Main extends Application {
 				errorlbl.setText("");
 				accNamefld.clear();
 				datepkr.getEditor().clear();
-				balnum.clear();
+				balnum.setText("0.00");
 			});
 			returnbtn.setOnAction(event -> primaryStage.setScene(scene));
 			cancelbtn.setOnAction(event -> primaryStage.setScene(scene));
@@ -168,21 +171,19 @@ public class Main extends Application {
 				try {
 					Double.parseDouble(balnum.getCharacters().toString());
 					if (!accNamefld.getCharacters().isEmpty()) {
-						System.out.print(datepkr.getValue().toString());
 						accNamefld.clear();
 						datepkr.getEditor().clear();
-						balnum.clear();
+						balnum.setText("0.00");
 						errorlbl.setText("Account Saved! You may return to homepage");
 					}
 					else {
 						errorlbl.setText("Please enter an account name");
 					}
-					
-				} catch (Exception e) {
-					errorlbl.setText("Please enter a valid balance");
+				}
+				catch (Exception e) {
+					errorlbl.setText("Please enter valid balance");
 				}
 			});
-			
 			// Adds scene into the stage and shows it
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -190,6 +191,20 @@ public class Main extends Application {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	public class FixedDecimalConverter extends DoubleStringConverter {
+
+	    private final int decimalPlaces;
+
+	    public FixedDecimalConverter(int decimalPlaces) {
+	        this.decimalPlaces = decimalPlaces;
+	    }
+
+	    @Override
+	    public String toString(Double value) {
+	        return String.format("%." + decimalPlaces + "f", value);
+	    }
+
 	}
 	
 	public static void main(String[] args) {

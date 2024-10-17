@@ -1,5 +1,7 @@
 package application;
 	
+import java.time.LocalDate;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -50,9 +52,13 @@ public class Main extends Application {
 			datelbl.setFont(normal);
 			DatePicker datepkr = new DatePicker();
 			
+			datepkr.setValue(LocalDate.now());
+			
 			Label ballbl = new Label("Opening Balance");
 			ballbl.setFont(normal);
 			TextField balnum = new TextField();
+			
+			Label errorlbl = new Label("");
 			
 			
 			// Put labels and fields into their style boxes
@@ -73,7 +79,7 @@ public class Main extends Application {
 			
 			dataBtns.getChildren().addAll(savebtn, cancelbtn);
 			dataBtns.setAlignment(Pos.CENTER);
-			accData.getChildren().add(dataBtns);
+			accData.getChildren().addAll(dataBtns, errorlbl);
 			
 			returnBox.getChildren().add(returnbtn);
 			returnBox.setPadding(new Insets(10));
@@ -151,12 +157,23 @@ public class Main extends Application {
 			home.setOnAction(event -> primaryStage.setScene(scene));
 			accbtn.setOnAction(event -> primaryStage.setScene(accountPage));
 			returnbtn.setOnAction(event -> primaryStage.setScene(scene));
-			cancelbtn.setOnAction(event -> primaryStage.setScene(scene));
-			savebtn.setOnAction(event -> {
-				savebtn.setStyle("-fx-background-color: #82ff88");
+			cancelbtn.setOnAction(event -> {
+				primaryStage.setScene(scene);
 				accNamefld.clear();
 				datepkr.getEditor().clear();
 				balnum.clear();
+				errorlbl.setText("");
+			});
+			savebtn.setOnAction(event -> {
+				if (!accNamefld.getCharacters().isEmpty() && !datepkr.equals(null)) {
+					accNamefld.clear();
+					datepkr.getEditor().clear();
+					balnum.clear();
+					errorlbl.setText("Account Saved! You may return to homepage");
+				}
+				else {
+					errorlbl.setText("Please make sure all info was inputted correctly");
+				}
 			});
 			
 			// Adds scene into the stage and shows it

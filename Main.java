@@ -51,8 +51,8 @@ public class Main extends Application {
 			Label datelbl = new Label("Opening Date");
 			datelbl.setFont(normal);
 			DatePicker datepkr = new DatePicker();
-			
 			datepkr.setValue(LocalDate.now());
+			datepkr.setPromptText("10/16/2024");
 			
 			Label ballbl = new Label("Opening Balance");
 			ballbl.setFont(normal);
@@ -167,16 +167,17 @@ public class Main extends Application {
 			savebtn.setOnAction(event -> {
 				try {
 					Double.parseDouble(balnum.getCharacters().toString());
-					if (!accNamefld.getCharacters().isEmpty() && !datepkr.equals(null)
-							&& !balnum.getCharacters().isEmpty()) {
+					if (!accNamefld.getCharacters().isEmpty()) {
+						System.out.print(datepkr.getValue().toString());
 						accNamefld.clear();
 						datepkr.getEditor().clear();
 						balnum.clear();
 						errorlbl.setText("Account Saved! You may return to homepage");
 					}
 					else {
-						errorlbl.setText("Please make sure all info was inputted correctly");
+						errorlbl.setText("Please enter an account name");
 					}
+					
 				} catch (Exception e) {
 					errorlbl.setText("Please enter a valid balance");
 				}

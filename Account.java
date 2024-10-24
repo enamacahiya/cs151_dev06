@@ -1,9 +1,11 @@
 package application;
+import java.time.LocalDate;
 
 public class Account {
 	
 	private String acc_name;
-	// private 
-	// private double 
-	
+	private LocalDate openingDate;
+	private double openingBalance;
 }
+public Account(
+

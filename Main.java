@@ -1,6 +1,11 @@
 package application;
 	
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -197,8 +202,11 @@ public class Main extends Application {
 			cancelbtn.setOnAction(event -> primaryStage.setScene(scene));
 			savebtn.setOnAction(event -> {
 				try {
-					Double.parseDouble(balnum.getCharacters().toString());
+					double passBalNum = Double.parseDouble(balnum.getText());
 					if (!accNamefld.getCharacters().isEmpty()) {
+						Account newAcc = new Account(accNamefld.getText(), datepkr.getValue(), passBalNum);
+						fileWriter(newAcc.getAccDetails());
+						
 						accNamefld.clear();
 						datepkr.getEditor().clear();
 						balnum.setText("0.00");
@@ -211,7 +219,8 @@ public class Main extends Application {
 				catch (Exception e) {
 					errorlbl.setText("Please enter valid balance");
 				}
-			});
+			}
+			);
 			// Adds scene into the stage and shows it
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -233,6 +242,42 @@ public class Main extends Application {
 	        return String.format("%." + decimalPlaces + "f", value);
 	    }
 
+	}
+	
+	public void fileCreator() {
+		try {
+		    File file = new File("filename.txt");
+		    if (file.createNewFile()) {
+		        System.out.println("File created: " + file.getName());
+		    } else {
+		        System.out.println("File already exists.");
+		    }
+		} catch (IOException e) {
+		    System.out.println("An error occurred.");
+		    e.printStackTrace();
+		}
+	}
+	
+	public void fileWriter(ArrayList<String> data) {
+		fileCreator();
+		
+		String CSV = "";
+		CSV = String.join(",", data);
+		
+		//if duplicate account name return
+		
+		try {
+		    FileWriter fw = new FileWriter("filename.txt", true);
+		    BufferedWriter bw = new BufferedWriter(fw);
+
+		    bw.write(CSV);
+		    bw.newLine(); // Add a new line
+
+		    bw.close();
+		} catch (IOException e) {
+		    System.out.println("An error occurred.");
+		    e.printStackTrace();
+		}
 	}
 	
 	public static void main(String[] args) {

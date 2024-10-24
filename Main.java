@@ -17,6 +17,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -55,6 +56,7 @@ public class Main extends Application {
 			DatePicker datepkr = new DatePicker();
 			datepkr.setValue(LocalDate.now());
 			datepkr.setPromptText("10/16/2024");
+			
 			
 			Label ballbl = new Label("Opening Balance");
 			ballbl.setFont(normal);
@@ -121,16 +123,39 @@ public class Main extends Application {
 			upcomingbtn.setFont(button);
 			reportbtn.setFont(button);
 			
+			// Account Info Display labels
+			Label accBoxlbl = new Label("Accounts");
+			Label accBoxNamelbl = new Label("Account Name");
+			Label accBoxDatelbl = new Label("Opening Date");
+			Label accBoxBallbl = new Label("Balance");
+			
+			accBoxlbl.setFont(normal);
+			accBoxNamelbl.setFont(normal);
+			accBoxDatelbl.setFont(normal);
+			accBoxBallbl.setFont(normal);
+			
+			
 			// Formatting Style Nodes
 			AnchorPane nav = new AnchorPane();
 			VBox menu = new VBox(5);
+			GridPane accBox = new GridPane();
 			
 			// Filling Style Nodes
 			nav.getChildren().addAll(home, notif);
 			menu.getChildren().addAll(acclbl, accbtn, tranlbl, tranbtn, schedulebtn,
 										upcomingbtn, reportbtn);
+			accBox.getChildren().addAll(accBoxlbl, accBoxNamelbl, accBoxDatelbl, accBoxBallbl);
 			
 			// Position Style Nodes
+			GridPane.setConstraints(accBoxlbl, 1, 0);
+			GridPane.setConstraints(accBoxNamelbl, 0, 1);
+			GridPane.setConstraints(accBoxDatelbl, 1, 1);
+			GridPane.setConstraints(accBoxBallbl, 2, 1);
+			GridPane.setMargin(accBoxNamelbl, new Insets(20));
+			GridPane.setMargin(accBoxDatelbl, new Insets(20));
+			GridPane.setMargin(accBoxBallbl, new Insets(20));
+			GridPane.setFillWidth(accBoxlbl, true);
+			
 			AnchorPane.setLeftAnchor(home, 10d);
 			AnchorPane.setRightAnchor(notif, 10d);
 			
@@ -139,6 +164,8 @@ public class Main extends Application {
 			nav.setPadding(new Insets(10));
 			menu.setAlignment(Pos.TOP_LEFT);
 			menu.setPadding(new Insets(10));
+			accBox.setAlignment(Pos.TOP_CENTER);
+			accBox.setPadding(new Insets(30));
 	
 			
 			// Formatting Style Nodes
@@ -151,6 +178,7 @@ public class Main extends Application {
 			// Add the constants in UI to root
 			root.setLeft(menu);
 			root.setTop(nav);
+			root.setCenter(accBox);
 			
 			//Scene creator (width, height)
 			Scene scene = new Scene(root,1000,500);

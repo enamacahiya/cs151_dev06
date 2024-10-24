@@ -195,7 +195,7 @@ public class Main extends Application {
 				primaryStage.setScene(accountPage);
 				errorlbl.setText("");
 				accNamefld.clear();
-				datepkr.getEditor().clear();
+				datepkr.setValue(LocalDate.now());
 				balnum.setText("0.00");
 			});
 			returnbtn.setOnAction(event -> primaryStage.setScene(scene));
@@ -208,7 +208,7 @@ public class Main extends Application {
 						fileWriter(newAcc.getAccDetails());
 						
 						accNamefld.clear();
-						datepkr.getEditor().clear();
+						datepkr.setValue(LocalDate.now());
 						balnum.setText("0.00");
 						errorlbl.setText("Account Saved! You may return to homepage");
 					}

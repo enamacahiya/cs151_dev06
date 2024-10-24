@@ -55,7 +55,7 @@ public class Main extends Application {
 			datelbl.setFont(normal);
 			DatePicker datepkr = new DatePicker();
 			datepkr.setValue(LocalDate.now());
-			datepkr.setPromptText("10/16/2024");
+			datepkr.setPromptText(LocalDate.now().toString());
 			
 			
 			Label ballbl = new Label("Opening Balance");

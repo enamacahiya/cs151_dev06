@@ -236,8 +236,8 @@ public class Main extends Application {
 							accNamefld.clear();
 							datepkr.setValue(LocalDate.now());
 							balnum.setText("0.00");
-							updateAccountList(accDetailsBox);
 							primaryStage.setScene(scene);
+							updateAccountList(accDetailsBox);
 						}
 						else {
 							errorlbl.setText("Please enter a new account name");

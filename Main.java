@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -148,13 +149,15 @@ public class Main extends Application {
 			// Formatting Style Nodes
 			AnchorPane nav = new AnchorPane();
 			VBox menu = new VBox(5);
-			GridPane accBox = new GridPane();
+			VBox accountBox = new VBox();
+			GridPane accLabelsBox = new GridPane();
+			GridPane accDetailsBox = new GridPane();
 			
 			// Filling Style Nodes
 			nav.getChildren().addAll(home, notif);
 			menu.getChildren().addAll(acclbl, accbtn, tranlbl, tranbtn, schedulebtn,
 										upcomingbtn, reportbtn);
-			accBox.getChildren().addAll(accBoxlbl, accBoxNamelbl, accBoxDatelbl, accBoxBallbl);
+			accLabelsBox.getChildren().addAll(accBoxlbl, accBoxNamelbl, accBoxDatelbl, accBoxBallbl);
 			
 			// Position Style Nodes
 			GridPane.setConstraints(accBoxlbl, 1, 0);
@@ -164,7 +167,6 @@ public class Main extends Application {
 			GridPane.setMargin(accBoxNamelbl, new Insets(20));
 			GridPane.setMargin(accBoxDatelbl, new Insets(20));
 			GridPane.setMargin(accBoxBallbl, new Insets(20));
-			GridPane.setFillWidth(accBoxlbl, true);
 			
 			AnchorPane.setLeftAnchor(home, 10d);
 			AnchorPane.setRightAnchor(notif, 10d);
@@ -174,8 +176,11 @@ public class Main extends Application {
 			nav.setPadding(new Insets(10));
 			menu.setAlignment(Pos.TOP_LEFT);
 			menu.setPadding(new Insets(10));
-			accBox.setAlignment(Pos.TOP_CENTER);
-			accBox.setPadding(new Insets(30));
+			accountBox.setAlignment(Pos.TOP_CENTER);
+			accountBox.setPadding(new Insets(30));
+			
+			
+			accountBox.getChildren().addAll(accLabelsBox, accDetailsBox);
 			
 			
 			// Formatting Style Nodes
@@ -188,11 +193,12 @@ public class Main extends Application {
 			// Add the constants in UI to root
 			root.setLeft(menu);
 			root.setTop(nav);
-			root.setCenter(accBox);
+			root.setCenter(accountBox);
 			
 			//Scene creator (width, height)
 			Scene scene = new Scene(root,1000,500);
 			
+			updateAccountList(accDetailsBox);
 			
 			//Transition button(s) implementation
 			home.setOnAction(event -> primaryStage.setScene(scene));
@@ -208,13 +214,31 @@ public class Main extends Application {
 			savebtn.setOnAction(event -> {
 				try {
 					double passBalNum = Double.parseDouble(balnum.getText());
+					
+					
 					if (!accNamefld.getCharacters().isEmpty()) {
-						Account newAcc = new Account(accNamefld.getText(), datepkr.getValue(), passBalNum);
-						fileWriter(newAcc.getAccDetails());
-						accNamefld.clear();
-						datepkr.setValue(LocalDate.now());
-						balnum.setText("0.00");
-						errorlbl.setText("Account Saved! You may return to homepage");
+						
+						boolean newName = true;
+						
+						ArrayList<Account> accounts = fileReader();
+						for (int i = 0; i < accounts.size(); i++) {
+							ArrayList<String> accDetails = accounts.get(i).getAccDetails();
+							if (accDetails.get(0).equals(accNamefld.getText())) {
+								newName = false;
+							}
+						}
+						if (newName) {
+							Account newAcc = new Account(accNamefld.getText(), datepkr.getValue(), passBalNum);
+							fileWriter(newAcc.getAccDetails());
+							accNamefld.clear();
+							datepkr.setValue(LocalDate.now());
+							balnum.setText("0.00");
+							updateAccountList(accLabelsBox);
+							primaryStage.setScene(scene);
+						}
+						else {
+							errorlbl.setText("Please enter a new account name");
+						}
 					}
 					else {
 						errorlbl.setText("Please enter an account name");
@@ -306,6 +330,34 @@ public class Main extends Application {
 		}
 		
 		return accounts;
+	}
+	
+	public void updateAccountList(GridPane table) {
+		for (int i = 0; i < table.getHeight(); i++) {
+			table.getChildren().clear();
+		}
+		ArrayList<Account> accountList = fileReader();
+		ArrayList<String> accountListStrings = new ArrayList<>();
+		for (int i = 0; i < accountList.size(); i++) {
+			// Formatted as Date, Name, Balance
+			accountListStrings.add(accountList.get(i).getAccDetails().get(1) + "," +
+									accountList.get(i).getAccDetails().get(0) + "," +
+									accountList.get(i).getAccDetails().get(2));
+		}
+		Collections.sort(accountListStrings);
+		for (int i = 0; i < accountList.size(); i++) {
+			String[] accountDetails = accountListStrings.get(i).split(",");
+			Label accountName = new Label(accountDetails[1]);
+			Label accountDate = new Label(accountDetails[0]);
+			Label accountBalance = new Label(accountDetails[2]);
+			table.getChildren().addAll(accountName, accountDate, accountBalance);
+			GridPane.setMargin(accountName, new Insets(0, 20, 0, 40));
+			GridPane.setMargin(accountDate, new Insets(0, 20, 0, 100));
+			GridPane.setMargin(accountBalance, new Insets(0, 0, 0, 80));
+			GridPane.setConstraints(accountName, 0, i);
+			GridPane.setConstraints(accountDate, 1, i);
+			GridPane.setConstraints(accountBalance, 2, i);
+		}
 	}
 	
 	public static void main(String[] args) {

@@ -1,11 +1,16 @@
 package application;
 	
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -171,7 +176,7 @@ public class Main extends Application {
 			menu.setPadding(new Insets(10));
 			accBox.setAlignment(Pos.TOP_CENTER);
 			accBox.setPadding(new Insets(30));
-	
+			
 			
 			// Formatting Style Nodes
 			BorderPane root = new BorderPane();
@@ -206,7 +211,6 @@ public class Main extends Application {
 					if (!accNamefld.getCharacters().isEmpty()) {
 						Account newAcc = new Account(accNamefld.getText(), datepkr.getValue(), passBalNum);
 						fileWriter(newAcc.getAccDetails());
-						
 						accNamefld.clear();
 						datepkr.setValue(LocalDate.now());
 						balnum.setText("0.00");
@@ -278,6 +282,30 @@ public class Main extends Application {
 		    System.out.println("An error occurred.");
 		    e.printStackTrace();
 		}
+	}
+	
+	public ArrayList<Account> fileReader() {	//Returns an array of Account objects read from the current file
+		ArrayList<Account> accounts = new ArrayList<>();
+		
+		try {
+			BufferedReader br = new BufferedReader(new FileReader("filename.txt"));
+			
+			while(br.ready()) {
+				String line = br.readLine();
+				String[] splitLine = line.split(",");
+				LocalDate test = LocalDate.parse(splitLine[1]);
+				Double value = Double.parseDouble(splitLine[2]);
+				Account tempAcc = new Account(splitLine[0], test, value);
+				
+				accounts.add(tempAcc);
+			}
+			
+			
+		} catch (IOException e) {
+			System.out.println("An error occurred.");
+		}
+		
+		return accounts;
 	}
 	
 	public static void main(String[] args) {

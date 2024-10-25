@@ -35,7 +35,6 @@ import javafx.scene.text.Font;
 
 
 public class Main extends Application {
-	int count = 0;
 	public void start(Stage primaryStage) {
 		try {
 			// Fonts
@@ -66,7 +65,6 @@ public class Main extends Application {
 			datelbl.setFont(normal);
 			DatePicker datepkr = new DatePicker();
 			datepkr.setValue(LocalDate.now());
-			datepkr.setPromptText(LocalDate.now().toString());
 			
 			
 			Label ballbl = new Label("Opening Balance");

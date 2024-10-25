@@ -179,6 +179,8 @@ public class Main extends Application {
 			menu.setPadding(new Insets(10));
 			accountBox.setAlignment(Pos.TOP_CENTER);
 			accountBox.setPadding(new Insets(30));
+			accDetailsBox.setAlignment(Pos.TOP_CENTER);
+			accLabelsBox.setAlignment(Pos.TOP_CENTER);
 			
 			
 			accountBox.getChildren().addAll(accLabelsBox, accDetailsBox);

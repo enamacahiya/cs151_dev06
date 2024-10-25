@@ -217,7 +217,7 @@ public class Main extends Application {
 					double passBalNum = Double.parseDouble(balnum.getText());
 					
 					
-					if (!accNamefld.getCharacters().isEmpty()) {
+					if (!accNamefld.getCharacters().isEmpty() && !accNamefld.getText().contains(",")) {
 						
 						boolean newName = true;
 						
@@ -242,7 +242,7 @@ public class Main extends Application {
 						}
 					}
 					else {
-						errorlbl.setText("Please enter an account name");
+						errorlbl.setText("Please enter a valid account name");
 					}
 				}
 				catch (Exception e) {
@@ -337,12 +337,15 @@ public class Main extends Application {
 		table.getChildren().clear();
 		ArrayList<Account> accountList = fileReader();
 		ArrayList<String> accountListStrings = new ArrayList<>();
+		
+		
 		for (int i = 0; i < accountList.size(); i++) {
 			// Formatted as Date, Name, Balance
-			accountListStrings.add(accountList.get(i).getAccDetails().get(1) + "," +
+			accountListStrings.add((accountList.get(i).getAccDetails().get(1) + "," +
 									accountList.get(i).getAccDetails().get(0) + "," +
-									accountList.get(i).getAccDetails().get(2));
+									accountList.get(i).getAccDetails().get(2)));
 		}
+		
 		Collections.sort(accountListStrings);
 		for (int i = 0; i < accountList.size(); i++) {
 			String[] accountDetails = accountListStrings.get(i).split(",");
@@ -351,7 +354,7 @@ public class Main extends Application {
 			Label accountBalance = new Label(accountDetails[2]);
 			table.getChildren().addAll(accountName, accountDate, accountBalance);
 			GridPane.setMargin(accountName, new Insets(0, 20, 0, 40));
-			GridPane.setMargin(accountDate, new Insets(0, 20, 0, 100));
+			GridPane.setMargin(accountDate, new Insets(0, 20, 0, 80));
 			GridPane.setMargin(accountBalance, new Insets(0, 0, 0, 80));
 			GridPane.setConstraints(accountName, 0, i);
 			GridPane.setConstraints(accountDate, 1, i);

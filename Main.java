@@ -167,6 +167,7 @@ public class Main extends Application {
 			GridPane.setMargin(accBoxNamelbl, new Insets(20));
 			GridPane.setMargin(accBoxDatelbl, new Insets(20));
 			GridPane.setMargin(accBoxBallbl, new Insets(20));
+			GridPane.setFillWidth(accBoxlbl, true);
 			
 			AnchorPane.setLeftAnchor(home, 10d);
 			AnchorPane.setRightAnchor(notif, 10d);
@@ -233,7 +234,7 @@ public class Main extends Application {
 							accNamefld.clear();
 							datepkr.setValue(LocalDate.now());
 							balnum.setText("0.00");
-							updateAccountList(accLabelsBox);
+							updateAccountList(accDetailsBox);
 							primaryStage.setScene(scene);
 						}
 						else {
@@ -333,9 +334,7 @@ public class Main extends Application {
 	}
 	
 	public void updateAccountList(GridPane table) {
-		for (int i = 0; i < table.getHeight(); i++) {
-			table.getChildren().clear();
-		}
+		table.getChildren().clear();
 		ArrayList<Account> accountList = fileReader();
 		ArrayList<String> accountListStrings = new ArrayList<>();
 		for (int i = 0; i < accountList.size(); i++) {

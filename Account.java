@@ -4,7 +4,7 @@ import java.util.*;
 import java.time.LocalDate;
 import javafx.scene.control.TextField;
 
-public class Account {
+public class Account implements CSVWritable{
     
     private String accName;
     private LocalDate openingDate;
@@ -16,7 +16,14 @@ public class Account {
         this.accBalance = accBalance;
     }
     
-    public ArrayList<String> getAccDetails() {
+    public Account(ArrayList<String> data) {
+    	this.accName = data.removeFirst().toString();
+    	this.openingDate = LocalDate.parse(data.removeFirst().toString());
+    	this.accBalance = Double.parseDouble(data.removeFirst().toString());
+    }
+    
+    @Override
+    public ArrayList<String> toArrayList() {
     	ArrayList<String> temp = new ArrayList<>();
         temp.add(accName);
         temp.add(openingDate.toString());

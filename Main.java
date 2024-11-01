@@ -1,5 +1,13 @@
 package application;
 
+<<<<<<< HEAD
+=======
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+>>>>>>> cf731218f242c9ad8613ea792b0d76eefb38799d
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -108,7 +116,11 @@ public class Main extends Application {
             Label acclbl = new Label("Accounts");
             Label tranlbl = new Label("Transactions");
             Button accbtn = new Button("Create New Account");
+<<<<<<< HEAD
             Button tranbtn = new Button("Enter Transaction");
+=======
+            Button tranbtn = new Button("Create Transaction");
+>>>>>>> cf731218f242c9ad8613ea792b0d76eefb38799d
             Button schedulebtn = new Button("Create Scheduled Transaction");
             Button upcomingbtn = new Button("Upcoming Transactions");
             Button reportbtn = new Button("Transaction Report");

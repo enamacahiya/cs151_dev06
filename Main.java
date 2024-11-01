@@ -1,10 +1,5 @@
 package application;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -102,6 +97,8 @@ public class Main extends Application {
             Scene accountPage = new Scene(accRoot, 1000, 500);
 
             Scene TransactionPage = transtart(stage);
+            
+            Scene TranTypePage = tranTypeStart(stage);
 
             // SCENE FOR MAIN STARTS HERE
 
@@ -115,6 +112,7 @@ public class Main extends Application {
             Button accbtn = new Button("Create New Account");
             Button tranbtn = new Button("Create Transaction");
             Button schedulebtn = new Button("Create Scheduled Transaction");
+            Button trantypebtn = new Button("Create Transaction Type");
             Button upcomingbtn = new Button("Upcoming Transactions");
             Button reportbtn = new Button("Transaction Report");
 
@@ -123,6 +121,7 @@ public class Main extends Application {
             accbtn.setFont(button);
             tranbtn.setFont(button);
             schedulebtn.setFont(button);
+            trantypebtn.setFont(button);
             upcomingbtn.setFont(button);
             reportbtn.setFont(button);
 
@@ -147,7 +146,7 @@ public class Main extends Application {
             // Filling Style Nodes
             nav.getChildren().addAll(home, notif);
             menu.getChildren().addAll(acclbl, accbtn, tranlbl, tranbtn, schedulebtn,
-                    upcomingbtn, reportbtn);
+                    trantypebtn, upcomingbtn, reportbtn);
             accLabelsBox.getChildren().addAll(accBoxlbl, accBoxNamelbl, accBoxDatelbl, accBoxBallbl);
 
             // Position Style Nodes
@@ -212,6 +211,9 @@ public class Main extends Application {
             });
             returnbtn.setOnAction(event -> primaryStage.setScene(mainScene));
             cancelbtn.setOnAction(event -> primaryStage.setScene(mainScene));
+            trantypebtn.setOnAction(event -> {
+            	primaryStage.setScene(TranTypePage);
+            });
             savebtn.setOnAction(event -> {
                 try {
                     double passBalNum = Double.parseDouble(balnum.getText());
@@ -273,7 +275,7 @@ public class Main extends Application {
             // Create label shelf, and input shelf
             Label Tranpagelbl = new Label("Define New Transaction");
             Tranpagelbl.setFont(normal);
-
+            
             Label Tranacclbl = new Label("From Account");
             Tranacclbl.setFont(normal);
             TextField Tranaccfld = new TextField();
@@ -342,6 +344,103 @@ public class Main extends Application {
             return null;
         }
     }
+    
+    public Scene tranTypeStart(Stage stage) {
+    	Font normal = new Font("Georgia", 20);
+    	
+    	Button savebtn = new Button("save");
+    	Button cancelbtn = new Button("cancel");
+    	Button returnbtn = new Button("return");
+    	
+    	HBox header = new HBox(20);
+    	
+    	header.getChildren().add(returnbtn);
+        header.setPadding(new Insets(10));
+
+        // Sets BG colors
+        header.setStyle("-fx-background-color: #dcebfc;");
+    	
+        Label TranTypeHeader = new Label("New Transaction Type");
+        TranTypeHeader.setFont(normal);
+        TranTypeHeader.setPadding(new Insets(30));
+        
+        HBox TranTypeMainHeader = new HBox();
+        TranTypeMainHeader.getChildren().add(TranTypeHeader);
+        TranTypeMainHeader.setAlignment(Pos.CENTER);
+        
+        TranTypeHeader.setAlignment(Pos.CENTER);
+        
+    	Label TranTypeName = new Label("Type Name");
+    	TranTypeName.setFont(normal);
+    	
+    	TextField TranType = new TextField();
+    	
+    	Label errorlbl = new Label();
+    	
+    	HBox buttonShelf = new HBox(10);
+    	buttonShelf.getChildren().addAll(savebtn, cancelbtn);
+    	buttonShelf.setAlignment(Pos.CENTER);
+    	
+    	HBox infoShelf = new HBox(10);
+    	infoShelf.getChildren().addAll(TranTypeName, TranType);
+    	infoShelf.setAlignment(Pos.CENTER);
+    	
+    	VBox mainShelf = new VBox(10);
+    	mainShelf.getChildren().addAll(infoShelf, buttonShelf, errorlbl);
+    	mainShelf.setAlignment(Pos.CENTER);
+    	
+    	BorderPane main = new BorderPane();
+    	main.setTop(TranTypeMainHeader);
+    	main.setCenter(mainShelf);
+    	
+    	BorderPane root = new BorderPane();
+    	
+    	root.setTop(header);
+    	root.setCenter(main);
+    	
+    	savebtn.setOnAction(event -> {
+    		if (TranType.getText() != "") {
+    			boolean newName = true;
+    			
+    			ArrayList<TransactionType> tranTypes = new ArrayList<TransactionType>();
+				DAL TranTypeDAL = new DAL("TransactionTypes");
+				for(ArrayList<String> element: TranTypeDAL.fileReader()) {
+					tranTypes.add(new TransactionType(element));
+				}
+				
+                for (int i = 0; i < tranTypes.size(); i++) {
+                    ArrayList<String> tranTypeDetails = tranTypes.get(i).toArrayList();
+                    if (tranTypeDetails.get(0).equals(TranType.getText())) {
+                        newName = false;
+                    }
+                }
+                
+                if (newName) {
+                	TransactionType newType = new TransactionType(TranType.getText());
+                    TranTypeDAL.fileWriter(newType.toArrayList());
+                    TranType.clear();
+                	stage.setScene(mainScene);
+                }
+                else {
+                	errorlbl.setText("Please enter a unique type name.");
+                }
+    		}
+    		else {
+    			errorlbl.setText("Please enter a type name.");
+    		}
+    	});
+    	cancelbtn.setOnAction(event -> {
+    		stage.setScene(mainScene);
+    	});
+    	returnbtn.setOnAction(event -> {
+    		stage.setScene(mainScene);
+    	});
+    	
+    	Scene TranTypePage = new Scene(root, 1000, 500);
+    	
+    	return TranTypePage;
+    }
+    
 
     public class FixedDecimalConverter extends DoubleStringConverter {
 

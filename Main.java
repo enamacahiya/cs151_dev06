@@ -430,9 +430,11 @@ public class Main extends Application {
     		}
     	});
     	cancelbtn.setOnAction(event -> {
+    		TranType.clear();
     		stage.setScene(mainScene);
     	});
     	returnbtn.setOnAction(event -> {
+    		TranType.clear();
     		stage.setScene(mainScene);
     	});
     	

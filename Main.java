@@ -426,10 +426,12 @@ public class Main extends Application {
     		}
     	});
     	cancelbtn.setOnAction(event -> {
+    		errorlbl.setText("");
     		TranType.clear();
     		stage.setScene(mainScene);
     	});
     	returnbtn.setOnAction(event -> {
+    		errorlbl.setText("");
     		TranType.clear();
     		stage.setScene(mainScene);
     	});

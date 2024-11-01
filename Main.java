@@ -405,15 +405,11 @@ public class Main extends Application {
     			ArrayList<TransactionType> tranTypes = new ArrayList<TransactionType>();
 				DAL TranTypeDAL = new DAL("TransactionTypes");
 				for(ArrayList<String> element: TranTypeDAL.fileReader()) {
-					tranTypes.add(new TransactionType(element));
+					tranTypes.add(0, new TransactionType(element));
+					if (tranTypes.get(0).toArrayList().get(0).equals(TranType.getText())) {
+						newName = false;
+					};
 				}
-				
-                for (int i = 0; i < tranTypes.size(); i++) {
-                    ArrayList<String> tranTypeDetails = tranTypes.get(i).toArrayList();
-                    if (tranTypeDetails.get(0).equals(TranType.getText())) {
-                        newName = false;
-                    }
-                }
                 
                 if (newName) {
                 	TransactionType newType = new TransactionType(TranType.getText());

@@ -25,10 +25,28 @@ import javafx.util.converter.DoubleStringConverter;
 
 public class Main extends Application {
     private Scene mainScene;
+    
+    ArrayList<Account> accounts = new ArrayList<Account>();
+    ArrayList<TransactionType> transactiontypes = new ArrayList<TransactionType>();
+    //ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+    
+    DAL accountDAL = new DAL("Accounts");
+    DAL transactionotypeDAL = new DAL("TransactionTypes");
+    //DAL transactionDAL = new DAL(dataDir.getName(), "Transactions");
 
     @Override
     public void start(Stage stage) throws IOException {
         try {
+			for(ArrayList<String> element: accountDAL.fileReader()) {
+				accounts.add(new Account(element));
+			}
+			for(ArrayList<String> element: transactionotypeDAL.fileReader()) {
+				transactiontypes.add(new TransactionType(element));
+			}
+//			for(ArrayList<String> element: transactionDAL.fileReader()) {
+//				transactions.add(new Transaction(element));
+//			}
+        	
             // Fonts
             Font normal = new Font("Georgia", 20);
             Font button = new Font("Calibri", 13);
@@ -214,12 +232,6 @@ public class Main extends Application {
                     if (!accNamefld.getText().isEmpty() && !accNamefld.getText().contains(",")) {
 
                         boolean newName = true;
-
-                        ArrayList<Account> accounts = new ArrayList<Account>();
-						DAL accountDAL = new DAL("Accounts");
-						for(ArrayList<String> element: accountDAL.fileReader()) {
-							accounts.add(new Account(element));
-						}
 						
                         for (int i = 0; i < accounts.size(); i++) {
                             ArrayList<String> accDetails = accounts.get(i).toArrayList();
@@ -229,7 +241,8 @@ public class Main extends Application {
                         }
                         if (newName) {
                             Account newAcc = new Account(accNamefld.getText(), datepkr.getValue(), passBalNum);
-                            accountDAL.fileWriter(newAcc.toArrayList());
+                            accounts.add(newAcc);
+                            //accountDAL.fileWriter(newAcc.toArrayList());
                             accNamefld.clear();
                             datepkr.setValue(LocalDate.now());
                             balnum.setText("0.00");
@@ -355,22 +368,17 @@ public class Main extends Application {
 
     public void updateAccountList(GridPane table) {
         table.getChildren().clear();
-        ArrayList<Account> accountList = new ArrayList<Account>();
-		DAL accountDAL = new DAL("Accounts");
-		for(ArrayList<String> element: accountDAL.fileReader()) {
-			accountList.add(new Account(element));
-		}
         ArrayList<String> accountListStrings = new ArrayList<>();
 
-        for (int i = 0; i < accountList.size(); i++) {
+        for (int i = 0; i < accounts.size(); i++) {
             // Formatted as Date, Name, Balance
-            accountListStrings.add((accountList.get(i).toArrayList().get(1) + "," +
-                    accountList.get(i).toArrayList().get(0) + "," +
-                    accountList.get(i).toArrayList().get(2)));
+            accountListStrings.add((accounts.get(i).toArrayList().get(1) + "," +
+            		accounts.get(i).toArrayList().get(0) + "," +
+            		accounts.get(i).toArrayList().get(2)));
         }
 
         Collections.sort(accountListStrings);
-        for (int i = 0; i < accountList.size(); i++) {
+        for (int i = 0; i < accounts.size(); i++) {
             String[] accountDetails = accountListStrings.get(i).split(",");
             Label accountName = new Label(accountDetails[1]);
             Label accountDate = new Label(accountDetails[0]);
@@ -383,6 +391,19 @@ public class Main extends Application {
             GridPane.setConstraints(accountDate, 1, i);
             GridPane.setConstraints(accountBalance, 2, i);
         }
+    }
+    
+    @Override
+    public void stop() {
+    	for(Account element: accounts) {
+    		accountDAL.fileWriter(element.toArrayList());
+    	}
+    	for(TransactionType element: transactiontypes) {
+    		transactionotypeDAL.fileWriter(element.toArrayList());
+    	}
+//    	for(Account element: accounts) {
+//    		accountDAL.fileWriter(element.toArrayList());
+//    	}
     }
 
     public static void main(String[] args) {

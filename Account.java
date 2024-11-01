@@ -2,13 +2,16 @@ package application;
 
 import java.util.*;
 import java.time.LocalDate;
-import javafx.scene.control.TextField;
 
 public class Account implements CSVWritable{
     
     private String accName;
     private LocalDate openingDate;
     private double accBalance;
+    
+    public Account() {
+    	
+    }
     
     public Account(String accName, LocalDate openingDate, double accBalance) {
         this.accName = accName;
@@ -17,9 +20,9 @@ public class Account implements CSVWritable{
     }
     
     public Account(ArrayList<String> data) {
-    	this.accName = data.removeFirst().toString();
-    	this.openingDate = LocalDate.parse(data.removeFirst().toString());
-    	this.accBalance = Double.parseDouble(data.removeFirst().toString());
+    	this.accName = data.remove(0).toString();
+    	this.openingDate = LocalDate.parse(data.remove(0).toString());
+    	this.accBalance = Double.parseDouble(data.remove(0).toString());
     }
     
     @Override
@@ -29,6 +32,10 @@ public class Account implements CSVWritable{
         temp.add(openingDate.toString());
         temp.add(Double.toString(accBalance));
         return temp;
+    }
+    
+    public String getAccName() {
+    	return this.accName;
     }
     
 }

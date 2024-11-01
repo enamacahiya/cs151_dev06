@@ -10,7 +10,7 @@ public class TransactionType implements CSVWritable{
 	}
 	
 	public TransactionType (ArrayList<String> data) {
-		this.typeName = data.removeFirst();
+		this.typeName = data.remove(0);
 	}
 	
 	@Override
@@ -18,5 +18,9 @@ public class TransactionType implements CSVWritable{
 		ArrayList<String> temp = new ArrayList<>();
 		temp.add(typeName);
 		return temp;
+	}
+	
+	public String getTransactionName() {
+		return this.typeName;
 	}
 }

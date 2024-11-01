@@ -1,13 +1,9 @@
 package application;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import javafx.application.Application;
@@ -15,6 +11,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -30,10 +27,28 @@ import javafx.util.converter.DoubleStringConverter;
 
 public class Main extends Application {
     private Scene mainScene;
+    
+    ArrayList<Account> accounts = new ArrayList<Account>();
+    ArrayList<TransactionType> transactiontypes = new ArrayList<TransactionType>();
+    ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+    
+    DAL accountDAL = new DAL("Accounts");
+    DAL transactionotypeDAL = new DAL("TransactionTypes");
+    DAL transactionDAL = new DAL("Transactions");
 
     @Override
     public void start(Stage stage) throws IOException {
         try {
+			for(ArrayList<String> element: accountDAL.fileReader()) {
+				accounts.add(new Account(element));
+			}
+			for(ArrayList<String> element: transactionotypeDAL.fileReader()) {
+				transactiontypes.add(new TransactionType(element));
+			}
+			for(ArrayList<String> element: transactionDAL.fileReader()) {
+				transactions.add(new Transaction(element));
+			}
+        	
             // Fonts
             Font normal = new Font("Georgia", 20);
             Font button = new Font("Calibri", 13);
@@ -100,8 +115,8 @@ public class Main extends Application {
             accRoot.setTop(returnBox);
 
             Scene accountPage = new Scene(accRoot, 1000, 500);
-
-            Scene TransactionPage = transtart(stage);
+            
+            Scene TranTypePage = tranTypeStart(stage);
 
             // SCENE FOR MAIN STARTS HERE
 
@@ -113,8 +128,9 @@ public class Main extends Application {
             Label acclbl = new Label("Accounts");
             Label tranlbl = new Label("Transactions");
             Button accbtn = new Button("Create New Account");
-            Button tranbtn = new Button("Create Transaction");
+            Button tranbtn = new Button("Enter Transaction");
             Button schedulebtn = new Button("Create Scheduled Transaction");
+            Button trantypebtn = new Button("Create Transaction Type");
             Button upcomingbtn = new Button("Upcoming Transactions");
             Button reportbtn = new Button("Transaction Report");
 
@@ -123,6 +139,7 @@ public class Main extends Application {
             accbtn.setFont(button);
             tranbtn.setFont(button);
             schedulebtn.setFont(button);
+            trantypebtn.setFont(button);
             upcomingbtn.setFont(button);
             reportbtn.setFont(button);
 
@@ -147,7 +164,7 @@ public class Main extends Application {
             // Filling Style Nodes
             nav.getChildren().addAll(home, notif);
             menu.getChildren().addAll(acclbl, accbtn, tranlbl, tranbtn, schedulebtn,
-                    upcomingbtn, reportbtn);
+                    trantypebtn, upcomingbtn, reportbtn);
             accLabelsBox.getChildren().addAll(accBoxlbl, accBoxNamelbl, accBoxDatelbl, accBoxBallbl);
 
             // Position Style Nodes
@@ -197,6 +214,7 @@ public class Main extends Application {
             // Transition button(s) implementation
             home.setOnAction(event -> primaryStage.setScene(mainScene));
             tranbtn.setOnAction(event -> {
+            	Scene TransactionPage = transtart(stage);
                 primaryStage.setScene(TransactionPage);
                 errorlbl.setText("");
                 accNamefld.clear();
@@ -212,6 +230,9 @@ public class Main extends Application {
             });
             returnbtn.setOnAction(event -> primaryStage.setScene(mainScene));
             cancelbtn.setOnAction(event -> primaryStage.setScene(mainScene));
+            trantypebtn.setOnAction(event -> {
+            	primaryStage.setScene(TranTypePage);
+            });
             savebtn.setOnAction(event -> {
                 try {
                     double passBalNum = Double.parseDouble(balnum.getText());
@@ -219,22 +240,15 @@ public class Main extends Application {
                     if (!accNamefld.getText().isEmpty() && !accNamefld.getText().contains(",")) {
 
                         boolean newName = true;
-
-                        ArrayList<Account> accounts = new ArrayList<Account>();
-						DAL accountDAL = new DAL("Accounts");
-						for(ArrayList<String> element: accountDAL.fileReader()) {
-							accounts.add(new Account(element));
-						}
 						
                         for (int i = 0; i < accounts.size(); i++) {
-                            ArrayList<String> accDetails = accounts.get(i).toArrayList();
-                            if (accDetails.get(0).equals(accNamefld.getText())) {
-                                newName = false;
-                            }
+                        	if(accounts.get(i).getAccName().equals(accNamefld.getText())) {
+                        		newName = false;
+                        	}
                         }
                         if (newName) {
                             Account newAcc = new Account(accNamefld.getText(), datepkr.getValue(), passBalNum);
-                            accountDAL.fileWriter(newAcc.toArrayList());
+                            accounts.add(newAcc);
                             accNamefld.clear();
                             datepkr.setValue(LocalDate.now());
                             balnum.setText("0.00");
@@ -258,7 +272,7 @@ public class Main extends Application {
             e.printStackTrace();
         }
     }
-
+    
     public Scene transtart(Stage stage) {
         try {
             // Fonts
@@ -273,23 +287,45 @@ public class Main extends Application {
             // Create label shelf, and input shelf
             Label Tranpagelbl = new Label("Define New Transaction");
             Tranpagelbl.setFont(normal);
-
-            Label Tranacclbl = new Label("From Account");
+            
+            Label Tranacclbl = new Label("Transaction Type");
             Tranacclbl.setFont(normal);
-            TextField Tranaccfld = new TextField();
+            ComboBox<String> Tranaccfld = new ComboBox();
+            for(TransactionType element: transactiontypes) {
+            	Tranaccfld.getItems().add(element.getTransactionName());
+            }
+            if(transactiontypes.size() > 0) {
+            	Tranaccfld.setValue(transactiontypes.get(0).getTransactionName());
+            }
 
-            Label Tranacclbl2 = new Label("To Account ");
+            Label Tranacclbl2 = new Label("Account Name");
             Tranacclbl2.setFont(normal);
-            TextField Tranaccfld2 = new TextField();
-
+            ComboBox<String> Tranaccfld2 = new ComboBox();
+            for(Account element: accounts) {
+            	Tranaccfld2.getItems().add(element.getAccName());
+            }
+            if(accounts.size() > 0) {
+            	Tranaccfld2.setValue(accounts.get(0).getAccName());
+            }
+            
             Label Trandatelbl = new Label("Transaction Date");
             Trandatelbl.setFont(normal);
             DatePicker Trandatepkr = new DatePicker();
+            Trandatepkr.setValue(LocalDate.now());
+            
+            Label Trandesclbl = new Label("Transaction description");
+            Trandesclbl.setFont(normal);
+            TextField Trandescfld = new TextField();
 
-            Label Tranamountlbl = new Label("Transaction Amount");
-            Tranamountlbl.setFont(normal);
-            TextField Tranamtnum = new TextField();
-            Tranamtnum.setTextFormatter(new TextFormatter<Double>(new FixedDecimalConverter(2), 0.0));
+            Label Tranpaylbl = new Label("Payment Amount");
+            Tranpaylbl.setFont(normal);
+            TextField Tranpaynum = new TextField();
+            Tranpaynum.setTextFormatter(new TextFormatter<Double>(new FixedDecimalConverter(2), 0.0));
+            
+            Label Trandeplbl = new Label("Deposit Amount");
+            Trandeplbl.setFont(normal);
+            TextField Trandepnum = new TextField();
+            Trandepnum.setTextFormatter(new TextFormatter<Double>(new FixedDecimalConverter(2), 0.0));
 
             Label Tranerrorlbl = new Label("");
 
@@ -298,8 +334,8 @@ public class Main extends Application {
 
             // Put labels and fields into their style boxes
 
-            labels.getChildren().addAll(Tranacclbl, Tranacclbl2, Trandatelbl, Tranamountlbl);
-            fields.getChildren().addAll(Tranaccfld, Tranaccfld2, Trandatepkr, Tranamtnum);
+            labels.getChildren().addAll(Tranacclbl2, Tranacclbl, Trandatelbl, Trandesclbl, Tranpaylbl, Trandeplbl);
+            fields.getChildren().addAll(Tranaccfld2, Tranaccfld, Trandatepkr, Trandescfld, Tranpaynum, Trandepnum);
 
             // Style nodes
             HBox TranaccDataHBox = new HBox(10);
@@ -334,6 +370,30 @@ public class Main extends Application {
             Trancancelbtn.setOnAction(event -> {
                 stage.setScene(mainScene);
             });
+            Transavebtn.setOnAction(event -> {
+            	if (Trandescfld.getText() != "" && !Trandescfld.getText().contains(",")) {
+            		if(Double.parseDouble(Tranpaynum.getText()) == 0.00
+            				&& Double.parseDouble(Trandepnum.getText()) == 0.00) {
+            			Tranerrorlbl.setText("Payment or Deposit field empty");
+            		}
+            		else {
+            			Transaction newTran = new Transaction(Tranaccfld2.getValue(), Tranaccfld.getValue(), 
+            					Trandatepkr.getValue(), Trandescfld.getText(), 
+            					Double.parseDouble(Tranpaynum.getText()), Double.parseDouble(Trandepnum.getText()));
+            			transactions.add(newTran);
+            			
+            			Trandescfld.clear();
+            			Tranpaynum.setText("0.00");
+            			Trandepnum.setText("0.00");
+            			Tranerrorlbl.setText("");
+            			
+            			stage.setScene(mainScene);
+            		}
+            	}
+            	else {
+            		Tranerrorlbl.setText("Description invalid");
+            	}
+            });
 
             return TransactionPage;
 
@@ -342,6 +402,101 @@ public class Main extends Application {
             return null;
         }
     }
+    
+    public Scene tranTypeStart(Stage stage) {
+    	Font normal = new Font("Georgia", 20);
+    	
+    	Button savebtn = new Button("save");
+    	Button cancelbtn = new Button("cancel");
+    	Button returnbtn = new Button("return");
+    	
+    	HBox header = new HBox(20);
+    	
+    	header.getChildren().add(returnbtn);
+        header.setPadding(new Insets(10));
+
+        // Sets BG colors
+        header.setStyle("-fx-background-color: #dcebfc;");
+    	
+        Label TranTypeHeader = new Label("New Transaction Type");
+        TranTypeHeader.setFont(normal);
+        TranTypeHeader.setPadding(new Insets(30));
+        
+        HBox TranTypeMainHeader = new HBox();
+        TranTypeMainHeader.getChildren().add(TranTypeHeader);
+        TranTypeMainHeader.setAlignment(Pos.CENTER);
+        
+        TranTypeHeader.setAlignment(Pos.CENTER);
+        
+    	Label TranTypeName = new Label("Type Name");
+    	TranTypeName.setFont(normal);
+    	
+    	TextField TranType = new TextField();
+    	
+    	Label errorlbl = new Label();
+    	
+    	HBox buttonShelf = new HBox(10);
+    	buttonShelf.getChildren().addAll(savebtn, cancelbtn);
+    	buttonShelf.setAlignment(Pos.CENTER);
+    	
+    	HBox infoShelf = new HBox(10);
+    	infoShelf.getChildren().addAll(TranTypeName, TranType);
+    	infoShelf.setAlignment(Pos.CENTER);
+    	
+    	VBox mainShelf = new VBox(10);
+    	mainShelf.getChildren().addAll(infoShelf, buttonShelf, errorlbl);
+    	mainShelf.setAlignment(Pos.CENTER);
+    	
+    	BorderPane main = new BorderPane();
+    	main.setTop(TranTypeMainHeader);
+    	main.setCenter(mainShelf);
+    	
+    	BorderPane root = new BorderPane();
+    	
+    	root.setTop(header);
+    	root.setCenter(main);
+    	
+    	savebtn.setOnAction(event -> {
+    		if (TranType.getText() != "" && !TranType.getText().contains(",")) {
+    			boolean newName = true;
+    			
+    			for(TransactionType element: transactiontypes) {
+    				if(element.getTransactionName().equals(TranType.getText())) {
+    					newName = false;
+    				}
+    			}
+                
+                if (newName) {
+                	TransactionType newType = new TransactionType(TranType.getText());
+                    transactiontypes.add(newType);
+                    TranType.clear();
+                    errorlbl.setText("");
+                	stage.setScene(mainScene);
+                }
+                else {
+                	errorlbl.setText("Please enter a unique type name.");
+                }
+    		}
+    		else {
+    			errorlbl.setText("Please enter a valid type name.");
+    		}
+    	});
+    	cancelbtn.setOnAction(event -> {
+    		errorlbl.setText("");
+    		TranType.clear();
+    		stage.setScene(mainScene);
+    	});
+    	returnbtn.setOnAction(event -> {
+    		errorlbl.setText("");
+    		TranType.clear();
+    		stage.setScene(mainScene);
+    	});
+    	
+    	Scene TranTypePage = new Scene(root, 1000, 500);
+    	
+    	return TranTypePage;
+    }
+    
 
     public class FixedDecimalConverter extends DoubleStringConverter {
 
@@ -360,26 +515,25 @@ public class Main extends Application {
 
     public void updateAccountList(GridPane table) {
         table.getChildren().clear();
-        ArrayList<Account> accountList = new ArrayList<Account>();
-		DAL accountDAL = new DAL("Accounts");
-		for(ArrayList<String> element: accountDAL.fileReader()) {
-			accountList.add(new Account(element));
-		}
         ArrayList<String> accountListStrings = new ArrayList<>();
 
-        for (int i = 0; i < accountList.size(); i++) {
+        for (int i = 0; i < accounts.size(); i++) {
             // Formatted as Date, Name, Balance
-            accountListStrings.add((accountList.get(i).toArrayList().get(1) + "," +
-                    accountList.get(i).toArrayList().get(0) + "," +
-                    accountList.get(i).toArrayList().get(2)));
+            accountListStrings.add((accounts.get(i).toArrayList().get(1) + "," +
+            		accounts.get(i).toArrayList().get(0) + "," +
+            		accounts.get(i).toArrayList().get(2)));
         }
 
         Collections.sort(accountListStrings);
-        for (int i = 0; i < accountList.size(); i++) {
+        for (int i = 0; i < accounts.size(); i++) {
             String[] accountDetails = accountListStrings.get(i).split(",");
             Label accountName = new Label(accountDetails[1]);
             Label accountDate = new Label(accountDetails[0]);
-            Label accountBalance = new Label(accountDetails[2]);
+            String accountBalString = accountDetails[2];
+            if (accountDetails[2].length() == 3) {
+            	accountBalString = accountBalString + "0";
+            }
+            Label accountBalance = new Label(accountBalString);
             table.getChildren().addAll(accountName, accountDate, accountBalance);
             GridPane.setMargin(accountName, new Insets(0, 20, 0, 40));
             GridPane.setMargin(accountDate, new Insets(0, 20, 0, 80));
@@ -388,6 +542,22 @@ public class Main extends Application {
             GridPane.setConstraints(accountDate, 1, i);
             GridPane.setConstraints(accountBalance, 2, i);
         }
+    }
+    
+    @Override
+    public void stop() {
+    	accountDAL.fileDelete();
+    	for(Account element: accounts) {
+    		accountDAL.fileWriter(element.toArrayList());
+    	}
+    	transactionotypeDAL.fileDelete();
+    	for(TransactionType element: transactiontypes) {
+    		transactionotypeDAL.fileWriter(element.toArrayList());
+    	}
+    	transactionDAL.fileDelete();
+    	for(Transaction element: transactions) {
+    		transactionDAL.fileWriter(element.toArrayList());
+    	}
     }
 
     public static void main(String[] args) {

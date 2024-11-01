@@ -19,4 +19,8 @@ public class TransactionType implements CSVWritable{
 		temp.add(typeName);
 		return temp;
 	}
+	
+	public String getTransactionName() {
+		return this.typeName;
+	}
 }

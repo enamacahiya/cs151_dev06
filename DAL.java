@@ -14,13 +14,16 @@ public class DAL {
 	
 	public DAL (String className) {
 		file = new File(className + ".csv");
-		
 		try {
 			file.createNewFile();
 		}
 		catch(IOException e) {
 			System.out.println("File creation error: " + className);
 		}
+	}
+	
+	public void fileDelete() {
+		file.delete();
 	}
 	
 	public void fileWriter(ArrayList<String> data) {

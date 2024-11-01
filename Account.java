@@ -2,7 +2,6 @@ package application;
 
 import java.util.*;
 import java.time.LocalDate;
-import javafx.scene.control.TextField;
 
 public class Account implements CSVWritable{
     
@@ -29,6 +28,10 @@ public class Account implements CSVWritable{
         temp.add(openingDate.toString());
         temp.add(Double.toString(accBalance));
         return temp;
+    }
+    
+    public String getAccName() {
+    	return this.accName;
     }
     
 }

@@ -36,6 +36,7 @@ import javafx.scene.text.Font;
 
 public class Main extends Application {
 	public void start(Stage primaryStage) {
+		    private Scene mainScene;
 		try {
 			// Fonts
 			Font normal = new Font("Georgia", 20);
@@ -197,12 +198,13 @@ public class Main extends Application {
 			root.setCenter(accountBox);
 			
 			//Scene creator (width, height)
-			Scene scene = new Scene(root,1000,500);
+			mainScene = new Scene(root,1000,500);
+			stage.setScene(mainScene);
 			
 			updateAccountList(accDetailsBox);
 			
 			//Transition button(s) implementation
-			home.setOnAction(event -> primaryStage.setScene(scene));
+			home.setOnAction(event -> primaryStage.setScene(mainScene));
 			accbtn.setOnAction(event -> {
 				primaryStage.setScene(accountPage);
 				errorlbl.setText("");
@@ -210,8 +212,8 @@ public class Main extends Application {
 				datepkr.setValue(LocalDate.now());
 				balnum.setText("0.00");
 			});
-			returnbtn.setOnAction(event -> primaryStage.setScene(scene));
-			cancelbtn.setOnAction(event -> primaryStage.setScene(scene));
+			returnbtn.setOnAction(event -> primaryStage.setScene(mainScene));
+			cancelbtn.setOnAction(event -> primaryStage.setScene(mainScene));
 			savebtn.setOnAction(event -> {
 				try {
 					double passBalNum = Double.parseDouble(balnum.getText());
@@ -234,7 +236,7 @@ public class Main extends Application {
 							accNamefld.clear();
 							datepkr.setValue(LocalDate.now());
 							balnum.setText("0.00");
-							primaryStage.setScene(scene);
+							primaryStage.setScene(mainScene);
 							updateAccountList(accDetailsBox);
 						}
 						else {
@@ -251,12 +253,95 @@ public class Main extends Application {
 			}
 			);
 			// Adds scene into the stage and shows it
-			primaryStage.setScene(scene);
+			primaryStage.setScene(mainScene);
 			primaryStage.show();
 			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+public Scene transtart(Stage stage) {
+        try {
+            // Fonts
+            Font normal = new Font("Georgia", 20);
+
+            // SCENE FOR Tran STARTS HERE
+            // Buttons
+            Button Tranreturnbtn = new Button("return");
+            Button Transavebtn = new Button("save");
+            Button Trancancelbtn = new Button("cancel");
+
+            // Create label shelf, and input shelf
+            Label Tranpagelbl = new Label("Define New Transaction");
+            Tranpagelbl.setFont(normal);
+
+            Label Tranacclbl = new Label("From Account");
+            Tranacclbl.setFont(normal);
+            TextField Tranaccfld = new TextField();
+
+            Label Tranacclbl2 = new Label("To Account ");
+            Tranacclbl2.setFont(normal);
+            TextField Tranaccfld2 = new TextField();
+
+            Label Trandatelbl = new Label("Transaction Date");
+            Trandatelbl.setFont(normal);
+            DatePicker Trandatepkr = new DatePicker();
+
+            Label Tranamountlbl = new Label("Transaction Amount");
+            Tranamountlbl.setFont(normal);
+            TextField Tranamtnum = new TextField();
+            Tranamtnum.setTextFormatter(new TextFormatter<Double>(new FixedDecimalConverter(2), 0.0));
+
+            Label Tranerrorlbl = new Label("");
+
+            VBox labels = new VBox(22);
+            VBox fields = new VBox(20);
+
+            // Put labels and fields into their style boxes
+
+            labels.getChildren().addAll(Tranacclbl, Tranacclbl2, Trandatelbl, Tranamountlbl);
+            fields.getChildren().addAll(Tranaccfld, Tranaccfld2, Trandatepkr, Tranamtnum);
+
+            // Style nodes
+            HBox TranaccDataHBox = new HBox(10);
+            VBox TranaccData = new VBox(10);
+            HBox TranreturnBox = new HBox(20);
+            HBox TrandataBtns = new HBox(15);
+
+            // Input into Style nodes
+            TranaccDataHBox.getChildren().addAll(labels, fields);
+            TranaccDataHBox.setAlignment(Pos.CENTER);
+            TranaccData.getChildren().add(TranaccDataHBox);
+            TranaccData.setAlignment(Pos.CENTER);
+
+            TrandataBtns.getChildren().addAll(Transavebtn, Trancancelbtn);
+            TrandataBtns.setAlignment(Pos.CENTER);
+            TranaccData.getChildren().addAll(TrandataBtns, Tranerrorlbl);
+
+            TranreturnBox.getChildren().add(Tranreturnbtn);
+            TranreturnBox.setPadding(new Insets(10));
+
+            // Sets BG colors
+            TranreturnBox.setStyle("-fx-background-color: #dcebfc;");
+            // Scene creator for Transaction page
+            BorderPane TranaccRoot = new BorderPane();
+            TranaccRoot.setCenter(TranaccData);
+            TranaccRoot.setTop(TranreturnBox);
+
+            Scene TransactionPage = new Scene(TranaccRoot, 1000, 500);
+            Tranreturnbtn.setOnAction(event -> {
+                stage.setScene(mainScene);
+            });
+            Trancancelbtn.setOnAction(event -> {
+                stage.setScene(mainScene);
+            });
+
+            return TransactionPage;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 	}
 	public class FixedDecimalConverter extends DoubleStringConverter {
 

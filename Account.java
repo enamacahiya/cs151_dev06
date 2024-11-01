@@ -20,9 +20,9 @@ public class Account implements CSVWritable{
     }
     
     public Account(ArrayList<String> data) {
-    	this.accName = data.removeFirst().toString();
-    	this.openingDate = LocalDate.parse(data.removeFirst().toString());
-    	this.accBalance = Double.parseDouble(data.removeFirst().toString());
+    	this.accName = data.remove(0).toString();
+    	this.openingDate = LocalDate.parse(data.remove(0).toString());
+    	this.accBalance = Double.parseDouble(data.remove(0).toString());
     }
     
     @Override

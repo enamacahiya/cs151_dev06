@@ -22,12 +22,12 @@ public class Transaction implements CSVWritable {
 	}
 	
 	public Transaction(ArrayList<String> data) {
-	    this.accName = data.removeFirst();
-		this.transName  = data.removeFirst();
-		this.transDate = LocalDate.parse(data.removeFirst().toString());
+	    this.accName = data.remove(0);
+		this.transName  = data.remove(0);
+		this.transDate = LocalDate.parse(data.remove(0).toString());
 		this.desc = data.removeFirst();
-		this.paymentAmt = Double.parseDouble(data.removeFirst().toString());
-		this.depositAmt = Double.parseDouble(data.removeFirst().toString());
+		this.paymentAmt = Double.parseDouble(data.remove(0).toString());
+		this.depositAmt = Double.parseDouble(data.remove(0).toString());
 	}
 	
 	@Override

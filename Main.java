@@ -10,6 +10,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -113,8 +114,6 @@ public class Main extends Application {
             accRoot.setTop(returnBox);
 
             Scene accountPage = new Scene(accRoot, 1000, 500);
-
-            Scene TransactionPage = transtart(stage);
             
             Scene TranTypePage = tranTypeStart(stage);
 
@@ -214,6 +213,7 @@ public class Main extends Application {
             // Transition button(s) implementation
             home.setOnAction(event -> primaryStage.setScene(mainScene));
             tranbtn.setOnAction(event -> {
+            	Scene TransactionPage = transtart(stage);
                 primaryStage.setScene(TransactionPage);
                 errorlbl.setText("");
                 accNamefld.clear();
@@ -271,7 +271,7 @@ public class Main extends Application {
             e.printStackTrace();
         }
     }
-
+    
     public Scene transtart(Stage stage) {
         try {
             // Fonts
@@ -287,17 +287,30 @@ public class Main extends Application {
             Label Tranpagelbl = new Label("Define New Transaction");
             Tranpagelbl.setFont(normal);
             
-            Label Tranacclbl = new Label("From Account");
+            Label Tranacclbl = new Label("Transaction Type");
             Tranacclbl.setFont(normal);
-            TextField Tranaccfld = new TextField();
+            ComboBox<String> Tranaccfld = new ComboBox();
+            for(TransactionType element: transactiontypes) {
+            	Tranaccfld.getItems().add(element.getTransactionName());
+            }
+            if(transactiontypes.size() > 0) {
+            	Tranaccfld.setValue(transactiontypes.getFirst().getTransactionName());
+            }
 
-            Label Tranacclbl2 = new Label("To Account ");
+            Label Tranacclbl2 = new Label("Account Name");
             Tranacclbl2.setFont(normal);
-            TextField Tranaccfld2 = new TextField();
-
+            ComboBox<String> Tranaccfld2 = new ComboBox();
+            for(Account element: accounts) {
+            	Tranaccfld2.getItems().add(element.getAccName());
+            }
+            if(accounts.size() > 0) {
+            	Tranaccfld2.setValue(accounts.getFirst().getAccName());
+            }
+            
             Label Trandatelbl = new Label("Transaction Date");
             Trandatelbl.setFont(normal);
             DatePicker Trandatepkr = new DatePicker();
+            Trandatepkr.setValue(LocalDate.now());
 
             Label Tranamountlbl = new Label("Transaction Amount");
             Tranamountlbl.setFont(normal);

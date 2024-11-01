@@ -413,18 +413,15 @@ public class Main extends Application {
     		if (TranType.getText() != "" && !TranType.getText().contains(",")) {
     			boolean newName = true;
     			
-    			ArrayList<TransactionType> tranTypes = new ArrayList<TransactionType>();
-				DAL TranTypeDAL = new DAL("TransactionTypes");
-				for(ArrayList<String> element: TranTypeDAL.fileReader()) {
-					tranTypes.add(0, new TransactionType(element));
-					if (tranTypes.get(0).toArrayList().get(0).equals(TranType.getText())) {
-						newName = false;
-					};
-				}
+    			for(TransactionType element: transactiontypes) {
+    				if(element.getTransactionName().equals(TranType.getText())) {
+    					newName = false;
+    				}
+    			}
                 
                 if (newName) {
                 	TransactionType newType = new TransactionType(TranType.getText());
-                    TranTypeDAL.fileWriter(newType.toArrayList());
+                    transactiontypes.add(newType);
                     TranType.clear();
                     errorlbl.setText("");
                 	stage.setScene(mainScene);

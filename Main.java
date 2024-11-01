@@ -399,7 +399,7 @@ public class Main extends Application {
     	root.setCenter(main);
     	
     	savebtn.setOnAction(event -> {
-    		if (TranType.getText() != "") {
+    		if (TranType.getText() != "" && !TranType.getText().contains(",")) {
     			boolean newName = true;
     			
     			ArrayList<TransactionType> tranTypes = new ArrayList<TransactionType>();
@@ -415,6 +415,7 @@ public class Main extends Application {
                 	TransactionType newType = new TransactionType(TranType.getText());
                     TranTypeDAL.fileWriter(newType.toArrayList());
                     TranType.clear();
+                    errorlbl.setText("");
                 	stage.setScene(mainScene);
                 }
                 else {
@@ -422,7 +423,7 @@ public class Main extends Application {
                 }
     		}
     		else {
-    			errorlbl.setText("Please enter a type name.");
+    			errorlbl.setText("Please enter a valid type name.");
     		}
     	});
     	cancelbtn.setOnAction(event -> {

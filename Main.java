@@ -30,8 +30,8 @@ import javafx.util.converter.DoubleStringConverter;
 
 
 public class Main extends Application {
+	private Scene mainScene;
 	public void start(Stage primaryStage) {
-		    private Scene mainScene;
 		try {
 			// Fonts
 			Font normal = new Font("Georgia", 20);
@@ -103,6 +103,8 @@ public class Main extends Application {
 			accRoot.setTop(returnBox);
 			
 			Scene accountPage = new Scene(accRoot, 1000, 500);
+			Scene TransactionPage = transtart(stage);
+
 			
 			
 			// SCENE FOR MAIN STARTS HERE

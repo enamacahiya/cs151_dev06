@@ -9,6 +9,10 @@ public class Account implements CSVWritable{
     private LocalDate openingDate;
     private double accBalance;
     
+    public Account() {
+    	
+    }
+    
     public Account(String accName, LocalDate openingDate, double accBalance) {
         this.accName = accName;
         this.openingDate = openingDate;

@@ -3,6 +3,7 @@ package application;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import javafx.application.Application;
@@ -294,7 +295,7 @@ public class Main extends Application {
             	Tranaccfld.getItems().add(element.getTransactionName());
             }
             if(transactiontypes.size() > 0) {
-            	Tranaccfld.setValue(transactiontypes.getFirst().getTransactionName());
+            	Tranaccfld.setValue(transactiontypes.get(0).getTransactionName());
             }
 
             Label Tranacclbl2 = new Label("Account Name");
@@ -304,18 +305,27 @@ public class Main extends Application {
             	Tranaccfld2.getItems().add(element.getAccName());
             }
             if(accounts.size() > 0) {
-            	Tranaccfld2.setValue(accounts.getFirst().getAccName());
+            	Tranaccfld2.setValue(accounts.get(0).getAccName());
             }
             
             Label Trandatelbl = new Label("Transaction Date");
             Trandatelbl.setFont(normal);
             DatePicker Trandatepkr = new DatePicker();
             Trandatepkr.setValue(LocalDate.now());
+            
+            Label Trandesclbl = new Label("Transaction description");
+            Trandesclbl.setFont(normal);
+            TextField Trandescfld = new TextField();
 
-            Label Tranamountlbl = new Label("Transaction Amount");
-            Tranamountlbl.setFont(normal);
-            TextField Tranamtnum = new TextField();
-            Tranamtnum.setTextFormatter(new TextFormatter<Double>(new FixedDecimalConverter(2), 0.0));
+            Label Tranpaylbl = new Label("Payment Amount");
+            Tranpaylbl.setFont(normal);
+            TextField Tranpaynum = new TextField();
+            Tranpaynum.setTextFormatter(new TextFormatter<Double>(new FixedDecimalConverter(2), 0.0));
+            
+            Label Trandeplbl = new Label("Deposit Amount");
+            Trandeplbl.setFont(normal);
+            TextField Trandepnum = new TextField();
+            Trandepnum.setTextFormatter(new TextFormatter<Double>(new FixedDecimalConverter(2), 0.0));
 
             Label Tranerrorlbl = new Label("");
 
@@ -324,8 +334,8 @@ public class Main extends Application {
 
             // Put labels and fields into their style boxes
 
-            labels.getChildren().addAll(Tranacclbl, Tranacclbl2, Trandatelbl, Tranamountlbl);
-            fields.getChildren().addAll(Tranaccfld, Tranaccfld2, Trandatepkr, Tranamtnum);
+            labels.getChildren().addAll(Tranacclbl2, Tranacclbl, Trandatelbl, Trandesclbl, Tranpaylbl, Trandeplbl);
+            fields.getChildren().addAll(Tranaccfld2, Tranaccfld, Trandatepkr, Trandescfld, Tranpaynum, Trandepnum);
 
             // Style nodes
             HBox TranaccDataHBox = new HBox(10);
@@ -359,6 +369,30 @@ public class Main extends Application {
             });
             Trancancelbtn.setOnAction(event -> {
                 stage.setScene(mainScene);
+            });
+            Transavebtn.setOnAction(event -> {
+            	if (Trandescfld.getText() != "" && !Trandescfld.getText().contains(",")) {
+            		if(Double.parseDouble(Tranpaynum.getText()) == 0.00
+            				&& Double.parseDouble(Trandepnum.getText()) == 0.00) {
+            			Tranerrorlbl.setText("Payment or Deposit field empty");
+            		}
+            		else {
+            			Transaction newTran = new Transaction(Tranaccfld2.getValue(), Tranaccfld.getValue(), 
+            					Trandatepkr.getValue(), Trandescfld.getText(), 
+            					Double.parseDouble(Tranpaynum.getText()), Double.parseDouble(Trandepnum.getText()));
+            			transactions.add(newTran);
+            			
+            			Trandescfld.clear();
+            			Tranpaynum.setText("0.00");
+            			Trandepnum.setText("0.00");
+            			Tranerrorlbl.setText("");
+            			
+            			stage.setScene(mainScene);
+            		}
+            	}
+            	else {
+            		Tranerrorlbl.setText("Description invalid");
+            	}
             });
 
             return TransactionPage;

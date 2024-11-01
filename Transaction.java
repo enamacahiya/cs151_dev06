@@ -5,18 +5,16 @@ import java.time.LocalDate;
 
 public class Transaction implements CSVWritable {
 	
-	private Account acc; // account obj
 	private String accName; // string of acc obj name
-	private TransactionType transType; // transType obj
 	private String transName; // string of TransType
     private LocalDate transDate;
     private String desc;
     private double paymentAmt;
     private double depositAmt;
 
-	public Transaction(Account acc, TransactionType transType, LocalDate transDate, String desc, double paymentAmt, double depositAmt) {
-		this.acc = acc;
-		this.transType = transType;
+	public Transaction(String name, String tName, LocalDate transDate, String desc, double paymentAmt, double depositAmt) {
+		this.accName = name;
+		this.transName = tName;
 		this.transDate = transDate;
 		this.desc = desc;
 		this.paymentAmt = paymentAmt;
@@ -24,10 +22,10 @@ public class Transaction implements CSVWritable {
 	}
 	
 	public Transaction(ArrayList<String> data) {
-	    this.accName = acc.getAccName();
-		this.transName  = transType.getTransactionName();
+	    this.accName = data.removeFirst();
+		this.transName  = data.removeFirst();
 		this.transDate = LocalDate.parse(data.removeFirst().toString());
-		this.desc = data.removeFirst().toString();
+		this.desc = data.removeFirst();
 		this.paymentAmt = Double.parseDouble(data.removeFirst().toString());
 		this.depositAmt = Double.parseDouble(data.removeFirst().toString());
 	}

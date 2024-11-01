@@ -22,6 +22,10 @@ public class DAL {
 		}
 	}
 	
+	public void fileDelete() {
+		file.delete();
+	}
+	
 	public void fileWriter(ArrayList<String> data) {
 		String CSV = "";
 		CSV = String.join(",", data);

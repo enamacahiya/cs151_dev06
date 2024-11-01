@@ -28,11 +28,11 @@ public class Main extends Application {
     
     ArrayList<Account> accounts = new ArrayList<Account>();
     ArrayList<TransactionType> transactiontypes = new ArrayList<TransactionType>();
-    //ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+    ArrayList<Transaction> transactions = new ArrayList<Transaction>();
     
     DAL accountDAL = new DAL("Accounts");
     DAL transactionotypeDAL = new DAL("TransactionTypes");
-    //DAL transactionDAL = new DAL(dataDir.getName(), "Transactions");
+    DAL transactionDAL = new DAL("Transactions");
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -43,9 +43,9 @@ public class Main extends Application {
 			for(ArrayList<String> element: transactionotypeDAL.fileReader()) {
 				transactiontypes.add(new TransactionType(element));
 			}
-//			for(ArrayList<String> element: transactionDAL.fileReader()) {
-//				transactions.add(new Transaction(element));
-//			}
+			for(ArrayList<String> element: transactionDAL.fileReader()) {
+				transactions.add(new Transaction(element));
+			}
         	
             // Fonts
             Font normal = new Font("Georgia", 20);
@@ -234,15 +234,13 @@ public class Main extends Application {
                         boolean newName = true;
 						
                         for (int i = 0; i < accounts.size(); i++) {
-                            ArrayList<String> accDetails = accounts.get(i).toArrayList();
-                            if (accDetails.get(0).equals(accNamefld.getText())) {
-                                newName = false;
-                            }
+                        	if(accounts.get(i).getAccName().equals(accNamefld.getText())) {
+                        		newName = false;
+                        	}
                         }
                         if (newName) {
                             Account newAcc = new Account(accNamefld.getText(), datepkr.getValue(), passBalNum);
                             accounts.add(newAcc);
-                            //accountDAL.fileWriter(newAcc.toArrayList());
                             accNamefld.clear();
                             datepkr.setValue(LocalDate.now());
                             balnum.setText("0.00");
@@ -395,15 +393,18 @@ public class Main extends Application {
     
     @Override
     public void stop() {
+    	accountDAL.fileDelete();
     	for(Account element: accounts) {
     		accountDAL.fileWriter(element.toArrayList());
     	}
+    	transactionotypeDAL.fileDelete();
     	for(TransactionType element: transactiontypes) {
     		transactionotypeDAL.fileWriter(element.toArrayList());
     	}
-//    	for(Account element: accounts) {
-//    		accountDAL.fileWriter(element.toArrayList());
-//    	}
+    	transactionDAL.fileDelete();
+    	for(Transaction element: transactions) {
+    		transactionDAL.fileWriter(element.toArrayList());
+    	}
     }
 
     public static void main(String[] args) {

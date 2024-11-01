@@ -14,7 +14,6 @@ public class DAL {
 	
 	public DAL (String className) {
 		file = new File(className + ".csv");
-		
 		try {
 			file.createNewFile();
 		}

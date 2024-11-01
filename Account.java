@@ -30,11 +30,8 @@ public class Account implements CSVWritable{
         return temp;
     }
     
-<<<<<<< HEAD
     public String getAccName() {
     	return this.accName;
     }
     
-=======
->>>>>>> cf731218f242c9ad8613ea792b0d76eefb38799d
 }

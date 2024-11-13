@@ -35,6 +35,7 @@ public class Main extends Application {
     DAL accountDAL = new DAL("Accounts");
     DAL transactionotypeDAL = new DAL("TransactionTypes");
     DAL transactionDAL = new DAL("Transactions");
+    DAL scheduledtransactionDAL = new DAL("ScheduledTransactions");
 
     @Override
     public void start(Stage stage) throws IOException {

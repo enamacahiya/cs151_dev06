@@ -3,10 +3,11 @@ package application;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -27,12 +28,12 @@ import javafx.util.converter.DoubleStringConverter;
 
 public class Main extends Application {
     private Scene mainScene;
-    
+
     ArrayList<Account> accounts = new ArrayList<Account>();
     ArrayList<TransactionType> transactiontypes = new ArrayList<TransactionType>();
     ArrayList<Transaction> transactions = new ArrayList<Transaction>();
     ArrayList<ScheduledTransaction> scheTransactions = new ArrayList<ScheduledTransaction>();
-    
+
     DAL accountDAL = new DAL("Accounts");
     DAL transactionotypeDAL = new DAL("TransactionTypes");
     DAL transactionDAL = new DAL("Transactions");
@@ -41,19 +42,19 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         try {
-			for(ArrayList<String> element: accountDAL.fileReader()) {
-				accounts.add(new Account(element));
-			}
-			for(ArrayList<String> element: transactionotypeDAL.fileReader()) {
-				transactiontypes.add(new TransactionType(element));
-			}
-			for(ArrayList<String> element: transactionDAL.fileReader()) {
-				transactions.add(new Transaction(element));
-			}
+            for (ArrayList<String> element : accountDAL.fileReader()) {
+                accounts.add(new Account(element));
+            }
+            for (ArrayList<String> element : transactionotypeDAL.fileReader()) {
+                transactiontypes.add(new TransactionType(element));
+            }
+            for (ArrayList<String> element : transactionDAL.fileReader()) {
+                transactions.add(new Transaction(element));
+            }
 			for(ArrayList<String> element: scheduledtransactionDAL.fileReader()) {
 				scheTransactions.add(new ScheduledTransaction(element));
 			}
-        	
+
             // Fonts
             Font normal = new Font("Georgia", 20);
             Font button = new Font("Calibri", 13);
@@ -120,7 +121,7 @@ public class Main extends Application {
             accRoot.setTop(returnBox);
 
             Scene accountPage = new Scene(accRoot, 1000, 500);
-            
+
             Scene TranTypePage = tranTypeStart(stage);
 
             // SCENE FOR MAIN STARTS HERE
@@ -219,8 +220,16 @@ public class Main extends Application {
             // Transition button(s) implementation
             home.setOnAction(event -> primaryStage.setScene(mainScene));
             tranbtn.setOnAction(event -> {
-            	Scene TransactionPage = transtart(stage);
+                Scene TransactionPage = transtart(stage);
                 primaryStage.setScene(TransactionPage);
+                errorlbl.setText("");
+                accNamefld.clear();
+                datepkr.setValue(LocalDate.now());
+                balnum.setText("0.00");
+            });
+            schedulebtn.setOnAction(event -> {
+                Scene scheTransPage = schestart(stage);
+                primaryStage.setScene(scheTransPage);
                 errorlbl.setText("");
                 accNamefld.clear();
                 datepkr.setValue(LocalDate.now());
@@ -236,7 +245,7 @@ public class Main extends Application {
             returnbtn.setOnAction(event -> primaryStage.setScene(mainScene));
             cancelbtn.setOnAction(event -> primaryStage.setScene(mainScene));
             trantypebtn.setOnAction(event -> {
-            	primaryStage.setScene(TranTypePage);
+                primaryStage.setScene(TranTypePage);
             });
             savebtn.setOnAction(event -> {
                 try {
@@ -245,11 +254,11 @@ public class Main extends Application {
                     if (!accNamefld.getText().isEmpty() && !accNamefld.getText().contains(",")) {
 
                         boolean newName = true;
-						
+
                         for (int i = 0; i < accounts.size(); i++) {
-                        	if(accounts.get(i).getAccName().equals(accNamefld.getText())) {
-                        		newName = false;
-                        	}
+                            if (accounts.get(i).getAccName().equals(accNamefld.getText())) {
+                                newName = false;
+                            }
                         }
                         if (newName) {
                             Account newAcc = new Account(accNamefld.getText(), datepkr.getValue(), passBalNum);
@@ -277,7 +286,7 @@ public class Main extends Application {
             e.printStackTrace();
         }
     }
-    
+
     public Scene transtart(Stage stage) {
         try {
             // Fonts
@@ -292,32 +301,32 @@ public class Main extends Application {
             // Create label shelf, and input shelf
             Label Tranpagelbl = new Label("Define New Transaction");
             Tranpagelbl.setFont(normal);
-            
+
             Label Tranacclbl = new Label("Transaction Type");
             Tranacclbl.setFont(normal);
             ComboBox<String> Tranaccfld = new ComboBox();
-            for(TransactionType element: transactiontypes) {
-            	Tranaccfld.getItems().add(element.getTransactionName());
+            for (TransactionType element : transactiontypes) {
+                Tranaccfld.getItems().add(element.getTransactionName());
             }
-            if(transactiontypes.size() > 0) {
-            	Tranaccfld.setValue(transactiontypes.get(0).getTransactionName());
+            if (transactiontypes.size() > 0) {
+                Tranaccfld.setValue(transactiontypes.get(0).getTransactionName());
             }
 
             Label Tranacclbl2 = new Label("Account Name");
             Tranacclbl2.setFont(normal);
             ComboBox<String> Tranaccfld2 = new ComboBox();
-            for(Account element: accounts) {
-            	Tranaccfld2.getItems().add(element.getAccName());
+            for (Account element : accounts) {
+                Tranaccfld2.getItems().add(element.getAccName());
             }
-            if(accounts.size() > 0) {
-            	Tranaccfld2.setValue(accounts.get(0).getAccName());
+            if (accounts.size() > 0) {
+                Tranaccfld2.setValue(accounts.get(0).getAccName());
             }
-            
+
             Label Trandatelbl = new Label("Transaction Date");
             Trandatelbl.setFont(normal);
             DatePicker Trandatepkr = new DatePicker();
             Trandatepkr.setValue(LocalDate.now());
-            
+
             Label Trandesclbl = new Label("Transaction description");
             Trandesclbl.setFont(normal);
             TextField Trandescfld = new TextField();
@@ -326,7 +335,7 @@ public class Main extends Application {
             Tranpaylbl.setFont(normal);
             TextField Tranpaynum = new TextField();
             Tranpaynum.setTextFormatter(new TextFormatter<Double>(new FixedDecimalConverter(2), 0.0));
-            
+
             Label Trandeplbl = new Label("Deposit Amount");
             Trandeplbl.setFont(normal);
             TextField Trandepnum = new TextField();
@@ -376,28 +385,26 @@ public class Main extends Application {
                 stage.setScene(mainScene);
             });
             Transavebtn.setOnAction(event -> {
-            	if (Trandescfld.getText() != "" && !Trandescfld.getText().contains(",")) {
-            		if(Double.parseDouble(Tranpaynum.getText()) == 0.00
-            				&& Double.parseDouble(Trandepnum.getText()) == 0.00) {
-            			Tranerrorlbl.setText("Payment or Deposit field empty");
-            		}
-            		else {
-            			Transaction newTran = new Transaction(Tranaccfld2.getValue(), Tranaccfld.getValue(), 
-            					Trandatepkr.getValue(), Trandescfld.getText(), 
-            					Double.parseDouble(Tranpaynum.getText()), Double.parseDouble(Trandepnum.getText()));
-            			transactions.add(newTran);
-            			
-            			Trandescfld.clear();
-            			Tranpaynum.setText("0.00");
-            			Trandepnum.setText("0.00");
-            			Tranerrorlbl.setText("");
-            			
-            			stage.setScene(mainScene);
-            		}
-            	}
-            	else {
-            		Tranerrorlbl.setText("Description invalid");
-            	}
+                if (Trandescfld.getText() != "" && !Trandescfld.getText().contains(",")) {
+                    if (Double.parseDouble(Tranpaynum.getText()) == 0.00
+                            && Double.parseDouble(Trandepnum.getText()) == 0.00) {
+                        Tranerrorlbl.setText("Payment or Deposit field empty");
+                    } else {
+                        Transaction newTran = new Transaction(Tranaccfld2.getValue(), Tranaccfld.getValue(),
+                                Trandatepkr.getValue(), Trandescfld.getText(),
+                                Double.parseDouble(Tranpaynum.getText()), Double.parseDouble(Trandepnum.getText()));
+                        transactions.add(newTran);
+
+                        Trandescfld.clear();
+                        Tranpaynum.setText("0.00");
+                        Trandepnum.setText("0.00");
+                        Tranerrorlbl.setText("");
+
+                        stage.setScene(mainScene);
+                    }
+                } else {
+                    Tranerrorlbl.setText("Description invalid");
+                }
             });
 
             return TransactionPage;
@@ -407,101 +414,270 @@ public class Main extends Application {
             return null;
         }
     }
-    
+
+    public Scene schestart(Stage stage) {
+        // Fonts
+        Font normal = new Font("Georgia", 20);
+
+        // Buttons
+        Button Tranreturnbtn = new Button("return");
+        Button Transavebtn = new Button("save");
+        Button Trancancelbtn = new Button("cancel");
+
+        // Create label shelf, and input shelf
+        Label Tranpagelbl = new Label("Define New Schedule Transaction");
+        Tranpagelbl.setFont(normal);
+
+        Label Transchlbl = new Label("Schedule's name");
+        Transchlbl.setFont(normal);
+        TextField Transchfld = new TextField();
+
+        Label Tranacclbl2 = new Label("Account");
+        Tranacclbl2.setFont(normal);
+        ComboBox<String> Tranaccfld2 = new ComboBox();
+        for (Account element : accounts) {
+            Tranaccfld2.getItems().add(element.getAccName());
+        }
+        if (accounts.size() > 0) {
+            Tranaccfld2.setValue(accounts.get(0).getAccName());
+        }
+
+        Label Trantypelbl = new Label(" Transaction Type");
+        Trantypelbl.setFont(normal);
+        ComboBox<String> Trantypefld = new ComboBox();
+        for (TransactionType element : transactiontypes) {
+            Trantypefld.getItems().add(element.getTransactionName());
+        }
+        if (transactiontypes.size() > 0) {
+            Trantypefld.setValue(transactiontypes.get(0).getTransactionName());
+        }
+
+        Label Trandesclbl = new Label("Frequency");
+        Trandesclbl.setFont(normal);
+        ComboBox<String> comboBox = new ComboBox();
+        ObservableList<String> options = FXCollections.observableArrayList(
+                "Monthly");
+        comboBox.setItems(options);
+        comboBox.setValue("Monthly");
+
+        Label Trandatelbl = new Label("Due Date");
+        Trandatelbl.setFont(normal);
+        TextField Trandatefld = new TextField();
+
+        Label Tranpaylbl = new Label("Payment Amount");
+        Tranpaylbl.setFont(normal);
+        TextField Tranpaynum = new TextField();
+        Tranpaynum.setTextFormatter(new TextFormatter<Double>(new FixedDecimalConverter(2), 0.0));
+
+        Label Tranerrorlbl = new Label("");
+        Tranerrorlbl.setStyle("-fx-text-fill: red;");
+
+        VBox labels = new VBox(22);
+        VBox fields = new VBox(20);
+
+        // Put labels and fields into their style boxes
+
+        labels.getChildren().addAll(Transchlbl, Tranacclbl2, Trantypelbl, Trandatelbl, Trandesclbl, Tranpaylbl);
+        fields.getChildren().addAll(Transchfld, Tranaccfld2, Trantypefld, Trandatefld, comboBox, Tranpaynum);
+
+        // Style nodes
+        HBox TranaccDataHBox = new HBox(10);
+        VBox TranaccData = new VBox(10);
+        HBox TranreturnBox = new HBox(20);
+        HBox TrandataBtns = new HBox(15);
+
+        // Input into Style nodes
+        TranaccDataHBox.getChildren().addAll(labels, fields);
+        TranaccDataHBox.setAlignment(Pos.CENTER);
+        TranaccData.getChildren().add(TranaccDataHBox);
+        TranaccData.setAlignment(Pos.CENTER);
+
+        TrandataBtns.getChildren().addAll(Transavebtn, Trancancelbtn);
+        TrandataBtns.setAlignment(Pos.CENTER);
+        TranaccData.getChildren().addAll(TrandataBtns, Tranerrorlbl);
+
+        TranreturnBox.getChildren().add(Tranreturnbtn);
+        TranreturnBox.setPadding(new Insets(10));
+
+        // Sets BG colors
+        TranreturnBox.setStyle("-fx-background-color: #dcebfc;");
+        // Scene creator for Transaction page
+        BorderPane TranaccRoot = new BorderPane();
+        TranaccRoot.setCenter(TranaccData);
+        TranaccRoot.setTop(TranreturnBox);
+
+        Scene scheTransPage = new Scene(TranaccRoot, 1000, 500);
+        Tranreturnbtn.setOnAction(event -> {
+            stage.setScene(mainScene);
+        });
+        Trancancelbtn.setOnAction(event -> {
+            stage.setScene(mainScene);
+        });
+        Transavebtn.setOnAction(event -> {
+            try {
+                String dueDateStr = Trandatefld.getText();
+                String scheduleName = Transchfld.getText();
+                double payment = 0.00;
+                if (Transchfld.getText() != "" && !Transchfld.getText().contains(",")) {
+                    if (Double.parseDouble(Tranpaynum.getText()) == 0.00) {
+                        Tranerrorlbl.setText("Payment field empty");
+                    }
+                    
+                    Boolean duplicate = false;
+                    for(ScheduledTransaction element: scheTransactions) {
+                    	if(element.getName().equals(scheduleName)) {
+                    		duplicate = true;
+                    	}
+                    }
+                    
+                    if (duplicate) {
+                        Tranerrorlbl.setText("Schedule name already exists");
+                        return;
+                    }
+
+                    int dueDate;
+                    try {
+                        dueDate = Integer.parseInt(dueDateStr);
+                        if (dueDate < 1 || dueDate > 31) {
+                            Tranerrorlbl.setText("Due daye must be between 1 and 31.");
+                            return;
+                        }
+                    } catch (NumberFormatException e) {
+                        Tranerrorlbl.setText("Invalid due date");
+                        return;
+                    }
+                    try {
+                        payment = Double.parseDouble(Tranpaynum.getText());
+                    } catch (NumberFormatException e) {
+                        Tranerrorlbl.setText("Payment field invalid");
+                        return;
+                    }
+
+                    ArrayList<String> scheduledData = new ArrayList<>();
+                    scheduledData.add(Transchfld.getText());
+                    scheduledData.add(Tranaccfld2.getValue());
+                    scheduledData.add(Trantypefld.getValue());
+                    scheduledData.add(Trandatefld.getText());
+                    scheduledData.add(String.valueOf(payment));
+                    
+                    ScheduledTransaction temp = new ScheduledTransaction(scheduledData);
+                    
+                    scheTransactions.add(temp);
+                    
+
+                    Tranerrorlbl.setText("Scheduled transaction saved!");
+
+                    stage.setScene(mainScene);
+
+
+                    Transchfld.clear();
+                    Tranpaynum.setText("0.00");
+                    Tranerrorlbl.setText("");
+                    Trandatefld.clear();
+
+                } else {
+                    Tranerrorlbl.setText("Schedule name is empty");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        return scheTransPage;
+
+    }
+
     public Scene tranTypeStart(Stage stage) {
-    	Font normal = new Font("Georgia", 20);
-    	
-    	Button savebtn = new Button("save");
-    	Button cancelbtn = new Button("cancel");
-    	Button returnbtn = new Button("return");
-    	
-    	HBox header = new HBox(20);
-    	
-    	header.getChildren().add(returnbtn);
+        Font normal = new Font("Georgia", 20);
+
+        Button savebtn = new Button("save");
+        Button cancelbtn = new Button("cancel");
+        Button returnbtn = new Button("return");
+
+        HBox header = new HBox(20);
+
+        header.getChildren().add(returnbtn);
         header.setPadding(new Insets(10));
 
         // Sets BG colors
         header.setStyle("-fx-background-color: #dcebfc;");
-    	
+
         Label TranTypeHeader = new Label("New Transaction Type");
         TranTypeHeader.setFont(normal);
         TranTypeHeader.setPadding(new Insets(30));
-        
+
         HBox TranTypeMainHeader = new HBox();
         TranTypeMainHeader.getChildren().add(TranTypeHeader);
         TranTypeMainHeader.setAlignment(Pos.CENTER);
-        
+
         TranTypeHeader.setAlignment(Pos.CENTER);
-        
-    	Label TranTypeName = new Label("Type Name");
-    	TranTypeName.setFont(normal);
-    	
-    	TextField TranType = new TextField();
-    	
-    	Label errorlbl = new Label();
-    	
-    	HBox buttonShelf = new HBox(10);
-    	buttonShelf.getChildren().addAll(savebtn, cancelbtn);
-    	buttonShelf.setAlignment(Pos.CENTER);
-    	
-    	HBox infoShelf = new HBox(10);
-    	infoShelf.getChildren().addAll(TranTypeName, TranType);
-    	infoShelf.setAlignment(Pos.CENTER);
-    	
-    	VBox mainShelf = new VBox(10);
-    	mainShelf.getChildren().addAll(infoShelf, buttonShelf, errorlbl);
-    	mainShelf.setAlignment(Pos.CENTER);
-    	
-    	BorderPane main = new BorderPane();
-    	main.setTop(TranTypeMainHeader);
-    	main.setCenter(mainShelf);
-    	
-    	BorderPane root = new BorderPane();
-    	
-    	root.setTop(header);
-    	root.setCenter(main);
-    	
-    	savebtn.setOnAction(event -> {
-    		if (TranType.getText() != "" && !TranType.getText().contains(",")) {
-    			boolean newName = true;
-    			
-    			for(TransactionType element: transactiontypes) {
-    				if(element.getTransactionName().equals(TranType.getText())) {
-    					newName = false;
-    				}
-    			}
-                
+
+        Label TranTypeName = new Label("Type Name");
+        TranTypeName.setFont(normal);
+
+        TextField TranType = new TextField();
+
+        Label errorlbl = new Label();
+
+        HBox buttonShelf = new HBox(10);
+        buttonShelf.getChildren().addAll(savebtn, cancelbtn);
+        buttonShelf.setAlignment(Pos.CENTER);
+
+        HBox infoShelf = new HBox(10);
+        infoShelf.getChildren().addAll(TranTypeName, TranType);
+        infoShelf.setAlignment(Pos.CENTER);
+
+        VBox mainShelf = new VBox(10);
+        mainShelf.getChildren().addAll(infoShelf, buttonShelf, errorlbl);
+        mainShelf.setAlignment(Pos.CENTER);
+
+        BorderPane main = new BorderPane();
+        main.setTop(TranTypeMainHeader);
+        main.setCenter(mainShelf);
+
+        BorderPane root = new BorderPane();
+
+        root.setTop(header);
+        root.setCenter(main);
+
+        savebtn.setOnAction(event -> {
+            if (TranType.getText() != "" && !TranType.getText().contains(",")) {
+                boolean newName = true;
+
+                for (TransactionType element : transactiontypes) {
+                    if (element.getTransactionName().equals(TranType.getText())) {
+                        newName = false;
+                    }
+                }
+
                 if (newName) {
-                	TransactionType newType = new TransactionType(TranType.getText());
+                    TransactionType newType = new TransactionType(TranType.getText());
                     transactiontypes.add(newType);
                     TranType.clear();
                     errorlbl.setText("");
-                	stage.setScene(mainScene);
+                    stage.setScene(mainScene);
+                } else {
+                    errorlbl.setText("Please enter a unique type name.");
                 }
-                else {
-                	errorlbl.setText("Please enter a unique type name.");
-                }
-    		}
-    		else {
-    			errorlbl.setText("Please enter a valid type name.");
-    		}
-    	});
-    	cancelbtn.setOnAction(event -> {
-    		errorlbl.setText("");
-    		TranType.clear();
-    		stage.setScene(mainScene);
-    	});
-    	returnbtn.setOnAction(event -> {
-    		errorlbl.setText("");
-    		TranType.clear();
-    		stage.setScene(mainScene);
-    	});
-    	
-    	Scene TranTypePage = new Scene(root, 1000, 500);
-    	
-    	return TranTypePage;
+            } else {
+                errorlbl.setText("Please enter a valid type name.");
+            }
+        });
+        cancelbtn.setOnAction(event -> {
+            errorlbl.setText("");
+            TranType.clear();
+            stage.setScene(mainScene);
+        });
+        returnbtn.setOnAction(event -> {
+            errorlbl.setText("");
+            TranType.clear();
+            stage.setScene(mainScene);
+        });
+
+        Scene TranTypePage = new Scene(root, 1000, 500);
+
+        return TranTypePage;
     }
-    
 
     public class FixedDecimalConverter extends DoubleStringConverter {
 
@@ -525,8 +701,8 @@ public class Main extends Application {
         for (int i = 0; i < accounts.size(); i++) {
             // Formatted as Date, Name, Balance
             accountListStrings.add((accounts.get(i).toArrayList().get(1) + "," +
-            		accounts.get(i).toArrayList().get(0) + "," +
-            		accounts.get(i).toArrayList().get(2)));
+                    accounts.get(i).toArrayList().get(0) + "," +
+                    accounts.get(i).toArrayList().get(2)));
         }
 
         Collections.sort(accountListStrings);
@@ -536,7 +712,7 @@ public class Main extends Application {
             Label accountDate = new Label(accountDetails[0]);
             String accountBalString = accountDetails[2];
             if (accountDetails[2].length() == 3) {
-            	accountBalString = accountBalString + "0";
+                accountBalString = accountBalString + "0";
             }
             Label accountBalance = new Label(accountBalString);
             table.getChildren().addAll(accountName, accountDate, accountBalance);
@@ -548,21 +724,21 @@ public class Main extends Application {
             GridPane.setConstraints(accountBalance, 2, i);
         }
     }
-    
+
     @Override
     public void stop() {
-    	accountDAL.fileDelete();
-    	for(Account element: accounts) {
-    		accountDAL.fileWriter(element.toArrayList());
-    	}
-    	transactionotypeDAL.fileDelete();
-    	for(TransactionType element: transactiontypes) {
-    		transactionotypeDAL.fileWriter(element.toArrayList());
-    	}
-    	transactionDAL.fileDelete();
-    	for(Transaction element: transactions) {
-    		transactionDAL.fileWriter(element.toArrayList());
-    	}
+        accountDAL.fileDelete();
+        for (Account element : accounts) {
+            accountDAL.fileWriter(element.toArrayList());
+        }
+        transactionotypeDAL.fileDelete();
+        for (TransactionType element : transactiontypes) {
+            transactionotypeDAL.fileWriter(element.toArrayList());
+        }
+        transactionDAL.fileDelete();
+        for (Transaction element : transactions) {
+            transactionDAL.fileWriter(element.toArrayList());
+        }
     	scheduledtransactionDAL.fileDelete();
     	for(ScheduledTransaction element: scheTransactions) {
     		scheduledtransactionDAL.fileWriter(element.toArrayList());

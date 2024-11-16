@@ -26,6 +26,10 @@ public class ScheduledTransaction implements CSVWritable{
 		this.paymentAmt = Double.parseDouble(data.remove(0).toString());
 	}
 	
+	public String getName() {
+		return schedName;
+	}
+	
 	@Override
 	public ArrayList<String> toArrayList() {
 		ArrayList<String> data = new ArrayList<>();

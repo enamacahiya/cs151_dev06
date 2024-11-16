@@ -556,7 +556,7 @@ public class Main extends Application {
         Label Tranpagelbl = new Label("Define New Schedule Transaction");
         Tranpagelbl.setFont(normal);
 
-        Label Transchlbl = new Label("Schedule's name");
+        Label Transchlbl = new Label("Schedule's Name");
         Transchlbl.setFont(normal);
         TextField Transchfld = new TextField();
 
@@ -570,7 +570,7 @@ public class Main extends Application {
             Tranaccfld2.setValue(accounts.get(0).getAccName());
         }
 
-        Label Trantypelbl = new Label(" Transaction Type");
+        Label Trantypelbl = new Label("Transaction Type");
         Trantypelbl.setFont(normal);
         ComboBox<String> Trantypefld = new ComboBox();
         for (TransactionType element : transactiontypes) {
@@ -819,7 +819,7 @@ public class Main extends Application {
         Label accNamelbl = new Label("Account");
         Label tranTypelbl = new Label("Type");
         Label frequencylbl = new Label("Frequency");
-        Label dueDatelbl = new Label("Due date");
+        Label dueDatelbl = new Label("Due Date");
         Label amountlbl = new Label("Amount");
         titlelbl.setFont(normal);
         scheNamelbl.setFont(normal);

@@ -10,7 +10,7 @@ public class ScheduledTransaction implements CSVWritable{
     private Integer dueDate; // Day of month payment due
     private double paymentAmt;
 
-	public ScheduledTransaction(String name, String accName, String tName, Integer dueDate, String desc, double paymentAmt) {
+	public ScheduledTransaction(String name, String accName, String tName, Integer dueDate, double paymentAmt) {
 		this.schedName = name;
 		this.accName = accName;
 		this.transName = tName;

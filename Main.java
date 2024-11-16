@@ -31,6 +31,7 @@ public class Main extends Application {
     ArrayList<Account> accounts = new ArrayList<Account>();
     ArrayList<TransactionType> transactiontypes = new ArrayList<TransactionType>();
     ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+    ArrayList<ScheduledTransaction> scheTransactions = new ArrayList<ScheduledTransaction>();
     
     DAL accountDAL = new DAL("Accounts");
     DAL transactionotypeDAL = new DAL("TransactionTypes");
@@ -48,6 +49,9 @@ public class Main extends Application {
 			}
 			for(ArrayList<String> element: transactionDAL.fileReader()) {
 				transactions.add(new Transaction(element));
+			}
+			for(ArrayList<String> element: scheduledtransactionDAL.fileReader()) {
+				scheTransactions.add(new ScheduledTransaction(element));
 			}
         	
             // Fonts
@@ -558,6 +562,10 @@ public class Main extends Application {
     	transactionDAL.fileDelete();
     	for(Transaction element: transactions) {
     		transactionDAL.fileWriter(element.toArrayList());
+    	}
+    	scheduledtransactionDAL.fileDelete();
+    	for(ScheduledTransaction element: scheTransactions) {
+    		scheduledtransactionDAL.fileWriter(element.toArrayList());
     	}
     }
 

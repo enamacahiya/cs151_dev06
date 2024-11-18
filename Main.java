@@ -969,11 +969,7 @@ public class Main extends Application {
             String[] accountDetails = accountListStrings.get(i).split(",");
             Label accountName = new Label(accountDetails[1]);
             Label accountDate = new Label(accountDetails[0]);
-            String accountBalString = accountDetails[2];
-            if (accountDetails[2].length() == 3) {
-                accountBalString = accountBalString + "0";
-            }
-            Label accountBalance = new Label(accountBalString);
+	    Label accountBalance = new Label(String.format("%.2f", Double.parseDouble(accountDetails[2])));
             table.getChildren().addAll(accountName, accountDate, accountBalance);
             GridPane.setMargin(accountName, new Insets(0, 20, 0, 40));
             GridPane.setMargin(accountDate, new Insets(0, 20, 0, 80));

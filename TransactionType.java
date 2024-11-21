@@ -23,4 +23,14 @@ public class TransactionType implements CSVWritable {
     public String getTransactionName() {
         return this.typeName;
     }
+    
+	public String searchString() {
+		return this.typeName;
+	}
+
+	@Override
+	public int compareTo(CSVWritable object) {
+		// TODO
+		return 0;
+	}
 }

@@ -169,6 +169,21 @@ public class Main extends Application {
             VBox accountBox = new VBox();
             GridPane accLabelsBox = new GridPane();
             GridPane accDetailsBox = new GridPane();
+            
+            ColumnConstraints col1 = new ColumnConstraints();
+            col1.setPercentWidth(33.33);
+            col1.setHalignment(HPos.CENTER);
+
+            ColumnConstraints col2 = new ColumnConstraints();
+            col2.setPercentWidth(33.33);
+            col2.setHalignment(HPos.CENTER);
+
+            ColumnConstraints col3 = new ColumnConstraints();
+            col3.setPercentWidth(33.33);
+            col3.setHalignment(HPos.CENTER);
+            
+            accLabelsBox.getColumnConstraints().addAll(col1, col2, col3);
+            accDetailsBox.getColumnConstraints().addAll(col1, col2, col3);
 
             // Filling Style Nodes
             nav.getChildren().addAll(home, notif);
@@ -217,7 +232,7 @@ public class Main extends Application {
             mainScene = new Scene(root, 1000, 500);
             stage.setScene(mainScene);
 
-            updateAccountList(accDetailsBox);
+            updateGridPane(accDetailsBox, "", accounts);
 
             Stage primaryStage = stage;
             // Transition button(s) implementation
@@ -231,7 +246,7 @@ public class Main extends Application {
                 balnum.setText("0.00");
             });
             schedulebtn.setOnAction(event -> {
-                Scene scheTransPage = schestart(stage);
+                Scene scheTransPage = schestart(stage, null);
                 primaryStage.setScene(scheTransPage);
                 errorlbl.setText("");
                 accNamefld.clear();
@@ -282,7 +297,7 @@ public class Main extends Application {
                             datepkr.setValue(LocalDate.now());
                             balnum.setText("0.00");
                             primaryStage.setScene(mainScene);
-                            updateAccountList(accDetailsBox);
+                            updateGridPane(accDetailsBox, "", accounts);
                         } else {
                             errorlbl.setText("Please enter a new account name");
                         }
@@ -437,8 +452,13 @@ public class Main extends Application {
            
             // Return Button
             Button returnbtn = new Button("return");
+            Button searchbtn = new Button("Search");
+            
+            TextField seachStringfld = new TextField();
+            
+            
             HBox header = new HBox(20);
-            header.getChildren().add(returnbtn);
+            header.getChildren().addAll(returnbtn, searchbtn, seachStringfld);
             header.setPadding(new Insets(10));
             
             // Set background color
@@ -512,7 +532,7 @@ public class Main extends Application {
             tranDetailsBox.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6);
 
             // Populate table
-            updateTransactionList(tranDetailsBox);
+            updateGridPane(tranDetailsBox, seachStringfld.getText(), transactions);
 
             // Table Creation
             VBox tranListBox = new VBox(10);
@@ -528,6 +548,10 @@ public class Main extends Application {
             BorderPane root = new BorderPane();
             root.setTop(header);
             root.setCenter(main);
+            
+            searchbtn.setOnAction(event -> {
+            	updateGridPane(tranDetailsBox, seachStringfld.getText(), transactions);
+            });
 
             // Return button action
             returnbtn.setOnAction(event -> {
@@ -542,8 +566,8 @@ public class Main extends Application {
             return null;
         }
     }
-    
-    public Scene schestart(Stage stage) {
+
+    public Scene schestart(Stage stage, ScheduledTransaction editable) {
         // Fonts
         Font normal = new Font("Georgia", 20);
 
@@ -607,6 +631,16 @@ public class Main extends Application {
 
         labels.getChildren().addAll(Transchlbl, Tranacclbl2, Trantypelbl, Trandatelbl, Trandesclbl, Tranpaylbl);
         fields.getChildren().addAll(Transchfld, Tranaccfld2, Trantypefld, Trandatefld, comboBox, Tranpaynum);
+        
+        if(editable != null) {
+        	ArrayList<String> temp = editable.toArrayList();
+        	Transchfld.setText(temp.remove(0));
+        	Tranaccfld2.setValue(temp.remove(0));
+        	Trantypefld.setValue(temp.remove(0));
+        	comboBox.setValue(temp.remove(0));
+        	Trandatefld.setText(temp.remove(0));
+        	Tranpaynum.setText(temp.remove(0));
+        }
 
         // Style nodes
         HBox TranaccDataHBox = new HBox(10);
@@ -658,7 +692,7 @@ public class Main extends Application {
                     	}
                     }
                     
-                    if (duplicate) {
+                    if (editable == null && duplicate) {
                         Tranerrorlbl.setText("Schedule name already exists");
                         return;
                     }
@@ -685,11 +719,14 @@ public class Main extends Application {
                     scheduledData.add(Transchfld.getText());
                     scheduledData.add(Tranaccfld2.getValue());
                     scheduledData.add(Trantypefld.getValue());
+                    scheduledData.add(comboBox.getValue());
                     scheduledData.add(Trandatefld.getText());
                     scheduledData.add(String.valueOf(payment));
                     
                     ScheduledTransaction temp = new ScheduledTransaction(scheduledData);
-                    
+                    if(editable != null) {
+                    	scheTransactions.remove(editable);
+                    }
                     scheTransactions.add(temp);
                     
 
@@ -821,6 +858,7 @@ public class Main extends Application {
         Label frequencylbl = new Label("Frequency");
         Label dueDatelbl = new Label("Due Date");
         Label amountlbl = new Label("Amount");
+        Label emptylbl = new Label("");
         titlelbl.setFont(normal);
         scheNamelbl.setFont(normal);
         accNamelbl.setFont(normal);
@@ -829,39 +867,47 @@ public class Main extends Application {
         dueDatelbl.setFont(normal);
         amountlbl.setFont(normal);
         Button returnbtn = new Button("return");
+        Button searchbtn = new Button("Search");
+        
+        TextField seachStringfld = new TextField();
         
         GridPane scheTranDetailsBox = new GridPane();
         GridPane scheTranLabelsBox = new GridPane();
         
-        
         // Column Constraints (percentages for consistent alignment)
         ColumnConstraints col1 = new ColumnConstraints();
-        col1.setPercentWidth(16.67);
+        col1.setPercentWidth(14.2);
         col1.setHalignment(HPos.CENTER);  // acc name
 
         ColumnConstraints col2 = new ColumnConstraints();
-        col2.setPercentWidth(16.67);
+        col2.setPercentWidth(14.2);
         col2.setHalignment(HPos.CENTER); // transaction type
 
         ColumnConstraints col3 = new ColumnConstraints();
-        col3.setPercentWidth(16.67);
+        col3.setPercentWidth(14.2);
         col3.setHalignment(HPos.CENTER); // date
 
         ColumnConstraints col4 = new ColumnConstraints();
-        col4.setPercentWidth(16.67);
+        col4.setPercentWidth(14.2);
         col4.setHalignment(HPos.CENTER); // desc
 
         ColumnConstraints col5 = new ColumnConstraints();
-        col5.setPercentWidth(16.67);
+        col5.setPercentWidth(14.2);
         col5.setHalignment(HPos.CENTER); // payment amount
 
         ColumnConstraints col6 = new ColumnConstraints();
-        col6.setPercentWidth(16.67);
+        col6.setPercentWidth(14.2);
         col6.setHalignment(HPos.CENTER); // deposit amount
-
-        scheTranLabelsBox.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6);
         
-        scheTranLabelsBox.getChildren().addAll(scheNamelbl, accNamelbl, tranTypelbl, frequencylbl, dueDatelbl, amountlbl);
+        ColumnConstraints col7 = new ColumnConstraints();
+        col6.setPercentWidth(14.2);
+        col6.setHalignment(HPos.CENTER); // button column
+
+        scheTranLabelsBox.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6, col7);
+        scheTranDetailsBox.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6, col7);
+        scheTranDetailsBox.setVgap(10);
+        
+        scheTranLabelsBox.getChildren().addAll(scheNamelbl, accNamelbl, tranTypelbl, frequencylbl, dueDatelbl, amountlbl, emptylbl);
         
         // Position Style Nodes
         GridPane.setConstraints(scheNamelbl, 0, 1);
@@ -870,12 +916,14 @@ public class Main extends Application {
         GridPane.setConstraints(frequencylbl, 3, 1);
         GridPane.setConstraints(dueDatelbl, 4, 1);
         GridPane.setConstraints(amountlbl, 5, 1);
+        GridPane.setConstraints(emptylbl, 6, 1);
         GridPane.setMargin(scheNamelbl, new Insets(20));
         GridPane.setMargin(accNamelbl, new Insets(20));
         GridPane.setMargin(tranTypelbl, new Insets(20));
         GridPane.setMargin(frequencylbl, new Insets(20));
         GridPane.setMargin(dueDatelbl, new Insets(20));
         GridPane.setMargin(amountlbl, new Insets(20));
+        GridPane.setMargin(emptylbl, new Insets(20));
         
         VBox scheTranBox = new VBox();
         scheTranBox.setAlignment(Pos.TOP_CENTER);
@@ -886,8 +934,19 @@ public class Main extends Application {
         
         HBox returnBox = new HBox(20);
         
-        returnBox.getChildren().add(returnbtn);
+        returnBox.getChildren().addAll(returnbtn, searchbtn, seachStringfld);
         returnBox.setPadding(new Insets(10));
+        
+        updateGridPane(scheTranDetailsBox, seachStringfld.getText(), scheTransactions);
+        
+        for(int i = 0; i < scheTranDetailsBox.getRowCount(); ++i) {
+        	Button button = new Button("EDIT");
+        	scheTranDetailsBox.add(button, 6, i);
+            button.setOnAction(event -> {
+            	Scene scheTransPage = schestart(stage, scheTransactions.get(scheTranDetailsBox.getRowIndex(button)));
+            	stage.setScene(scheTransPage);
+            });
+        }
         
         // Sets BG colors
         returnBox.setStyle("-fx-background-color: #dcebfc;");
@@ -898,38 +957,9 @@ public class Main extends Application {
         
         Scene showScheTranPage = new Scene(scheTranRoot, 1000, 500);
         
-        //list sheduled transaction details here
-        scheTranDetailsBox.getChildren().clear();
-        ArrayList<String> scheTranListStrings = new ArrayList<>();
-
-        for (int i = 0; i < scheTransactions.size(); i++) {
-            // Formatted as Date, Name, Balance
-        	scheTranListStrings.add((scheTransactions.get(i).toArrayList().get(3) + "," +
-        			scheTransactions.get(i).toArrayList().get(0) + "," +
-        			scheTransactions.get(i).toArrayList().get(1) + "," +
-        			scheTransactions.get(i).toArrayList().get(2) + "," +
-        			scheTransactions.get(i).toArrayList().get(4)));
-        }
-        scheTranDetailsBox.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6);
-        Collections.sort(scheTranListStrings);
-        for (int i = 0; i < scheTransactions.size(); i++) {
-            String[] accountDetails = scheTranListStrings.get(i).split(",");
-            Label dueDate = new Label(accountDetails[0]);
-            Label name = new Label(accountDetails[1]);
-            Label accountName = new Label(accountDetails[2]);
-            Label transactionType = new Label(accountDetails[3]);
-            Label frequency = new Label("Monthly");        
-            Label amount = new Label(String.format("%.2f", Double.parseDouble(accountDetails[4])));
-            scheTranDetailsBox.getChildren().addAll(name, accountName, transactionType, frequency, dueDate, amount);
-            scheTranDetailsBox.setHgap(10);
-            scheTranDetailsBox.setVgap(10);
-            GridPane.setConstraints(name, 0, i);
-            GridPane.setConstraints(accountName, 1, i);
-            GridPane.setConstraints(transactionType, 2, i);
-            GridPane.setConstraints(frequency, 3, i);
-            GridPane.setConstraints(dueDate, 4, i);
-            GridPane.setConstraints(amount, 5, i);
-        }
+        searchbtn.setOnAction(event -> {
+        	updateGridPane(scheTranDetailsBox, seachStringfld.getText(), scheTransactions);
+        });
         
         returnbtn.setOnAction(event -> {
             stage.setScene(mainScene);
@@ -950,76 +980,27 @@ public class Main extends Application {
         public String toString(Double value) {
             return String.format("%." + decimalPlaces + "f", value);
         }
-
-    }
-
-    public void updateAccountList(GridPane table) {
-        table.getChildren().clear();
-        ArrayList<String> accountListStrings = new ArrayList<>();
-
-        for (int i = 0; i < accounts.size(); i++) {
-            // Formatted as Date, Name, Balance
-            accountListStrings.add((accounts.get(i).toArrayList().get(1) + "," +
-                    accounts.get(i).toArrayList().get(0) + "," +
-                    accounts.get(i).toArrayList().get(2)));
-        }
-
-        Collections.sort(accountListStrings);
-        for (int i = 0; i < accounts.size(); i++) {
-            String[] accountDetails = accountListStrings.get(i).split(",");
-            Label accountName = new Label(accountDetails[1]);
-            Label accountDate = new Label(accountDetails[0]);
-	    Label accountBalance = new Label(String.format("%.2f", Double.parseDouble(accountDetails[2])));
-            table.getChildren().addAll(accountName, accountDate, accountBalance);
-            GridPane.setMargin(accountName, new Insets(0, 20, 0, 40));
-            GridPane.setMargin(accountDate, new Insets(0, 20, 0, 80));
-            GridPane.setMargin(accountBalance, new Insets(0, 0, 0, 80));
-            GridPane.setConstraints(accountName, 0, i);
-            GridPane.setConstraints(accountDate, 1, i);
-            GridPane.setConstraints(accountBalance, 2, i);
-        }
     }
     
-    public void updateTransactionList(GridPane table) {
-        table.getChildren().clear();
-        ArrayList<String> tranListStrings = new ArrayList<>();
-
-        for (Transaction transaction : transactions) {
-            tranListStrings.add(
-                transaction.toArrayList().get(0) + "," +   // acc name
-                transaction.toArrayList().get(1) + "," +   // transaction type
-                transaction.toArrayList().get(2) + "," +   // date
-                transaction.toArrayList().get(3) + "," +   // desc
-                transaction.toArrayList().get(4) + "," +   // payment amount
-                transaction.toArrayList().get(5)           // deposit amount
-            );
-        }
-
-        Collections.sort(tranListStrings);
-        int rowIndex = 0;
-        for (String record : tranListStrings) {
-            String[] transactionDetails = record.split(",");
-
-            // Labels for each column
-            Label accountName = new Label(transactionDetails[0]);
-            Label transactionType = new Label(transactionDetails[1]);
-            Label date = new Label(transactionDetails[2]);
-            Label description = new Label(transactionDetails[3]);
-            Label paymentAmount = new Label(String.format("%.2f", Double.parseDouble(transactionDetails[4])));
-            Label depositAmount = new Label(String.format("%.2f", Double.parseDouble(transactionDetails[5])));
-
-            // Add labels to grid
-            table.add(accountName, 0, rowIndex);
-            table.add(transactionType, 1, rowIndex);
-            table.add(date, 2, rowIndex);
-            table.add(description, 3, rowIndex);
-            table.add(paymentAmount, 4, rowIndex);
-            table.add(depositAmount, 5, rowIndex);
-
-            rowIndex++;
-        }
+    public void updateGridPane(GridPane table, String searchString, ArrayList<? extends CSVWritable> list) {
+    	table.getChildren().clear();
+    	Collections.sort(list);
+    	for(int i = 0; i < list.size(); ++i) {
+    		if(list.get(i).searchString().toLowerCase().contains(searchString.toLowerCase())) {
+    			ArrayList<String> details = list.get(i).toArrayList();
+    			for(int j = 0; j < details.size(); ++j) {
+    				String str = details.get(j);
+    				if(str.length() > 2 && str.charAt(str.length() - 2) == '.') {
+    					str = str.concat("0");
+    				}
+    				Label temp = new Label(str);
+    				table.getChildren().add(temp);
+    				GridPane.setConstraints(temp, j, i);
+    			}
+    		}
+    	}
     }
-
+    
     @Override
     public void stop() {
         accountDAL.fileDelete();

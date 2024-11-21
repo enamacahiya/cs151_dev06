@@ -37,5 +37,18 @@ public class Account implements CSVWritable {
     public String getAccName() {
         return this.accName;
     }
+    
+	public LocalDate getDate() {
+		return openingDate;
+	}
+	
+	public String searchString() {
+		return openingDate.toString();
+	}
+
+	@Override
+	public int compareTo(CSVWritable object) {
+		return openingDate.compareTo(((Account) object).getDate());
+	}
 
 }

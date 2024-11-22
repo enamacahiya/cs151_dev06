@@ -25,6 +25,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
@@ -238,7 +239,7 @@ public class Main extends Application {
             // Transition button(s) implementation
             home.setOnAction(event -> primaryStage.setScene(mainScene));
             tranbtn.setOnAction(event -> {
-                Scene TransactionPage = transtart(stage);
+                Scene TransactionPage = transtart(stage, null);
                 primaryStage.setScene(TransactionPage);
                 errorlbl.setText("");
                 accNamefld.clear();
@@ -317,7 +318,7 @@ public class Main extends Application {
         }
     }
 
-    public Scene transtart(Stage stage) {
+    public Scene transtart(Stage stage, Transaction editable) {
         try {
             // Fonts
             Font normal = new Font("Georgia", 20);
@@ -381,6 +382,16 @@ public class Main extends Application {
             labels.getChildren().addAll(Tranacclbl2, Tranacclbl, Trandatelbl, Trandesclbl, Tranpaylbl, Trandeplbl);
             fields.getChildren().addAll(Tranaccfld2, Tranaccfld, Trandatepkr, Trandescfld, Tranpaynum, Trandepnum);
 
+            if(editable != null) {
+            	ArrayList<String> temp = editable.toArrayList();
+            	Tranaccfld2.setValue(temp.remove(0));
+            	Tranaccfld.setValue(temp.remove(0));
+            	Trandatepkr.setValue(LocalDate.parse(temp.remove(0)));
+            	Trandescfld.setText(temp.remove(0));
+            	Tranpaynum.setText(temp.remove(0));
+            	Trandepnum.setText(temp.remove(0));
+            }
+            
             // Style nodes
             HBox TranaccDataHBox = new HBox(10);
             VBox TranaccData = new VBox(10);
@@ -409,28 +420,62 @@ public class Main extends Application {
 
             Scene TransactionPage = new Scene(TranaccRoot, 1000, 500);
             Tranreturnbtn.setOnAction(event -> {
-                stage.setScene(mainScene);
+            	if(editable != null) {
+            		Scene TranListPage = tranListStart(stage);
+            		stage.setScene(TranListPage);
+            	}
+            	else {
+            		stage.setScene(mainScene);
+            	}
             });
             Trancancelbtn.setOnAction(event -> {
-                stage.setScene(mainScene);
+            	if(editable != null) {
+            		Scene TranListPage = tranListStart(stage);
+            		stage.setScene(TranListPage);
+            	}
+            	else {
+            		stage.setScene(mainScene);
+            	}
             });
             Transavebtn.setOnAction(event -> {
                 if (Trandescfld.getText() != "" && !Trandescfld.getText().contains(",")) {
                     if (Double.parseDouble(Tranpaynum.getText()) == 0.00
                             && Double.parseDouble(Trandepnum.getText()) == 0.00) {
                         Tranerrorlbl.setText("Payment or Deposit field empty");
-                    } else {
+                    } 
+                    else {
+                    	if(editable != null) {
                         Transaction newTran = new Transaction(Tranaccfld2.getValue(), Tranaccfld.getValue(),
                                 Trandatepkr.getValue(), Trandescfld.getText(),
                                 Double.parseDouble(Tranpaynum.getText()), Double.parseDouble(Trandepnum.getText()));
                         transactions.add(newTran);
+                    	}
+                    	else {
+                            ArrayList<String> transactionData = new ArrayList<>();
+                            transactionData.add(Tranaccfld2.getValue());
+                            transactionData.add(Tranaccfld.getValue());
+                            transactionData.add(Trandatepkr.getValue().toString());
+                            transactionData.add(Trandescfld.getText());
+                            transactionData.add(Tranpaynum.getText());
+                            transactionData.add(Trandepnum.getText());
+                            
+                            Transaction temp = new Transaction(transactionData);
+                            transactions.remove(editable);
+                            transactions.add(temp);
+                    	}
 
                         Trandescfld.clear();
                         Tranpaynum.setText("0.00");
                         Trandepnum.setText("0.00");
                         Tranerrorlbl.setText("");
 
-                        stage.setScene(mainScene);
+                    	if(editable != null) {
+                    		Scene TranListPage = tranListStart(stage);
+                    		stage.setScene(TranListPage);
+                    	}
+                    	else {
+                    		stage.setScene(mainScene);
+                    	}
                     }
                 } else {
                     Tranerrorlbl.setText("Description invalid");
@@ -467,39 +512,40 @@ public class Main extends Application {
             // Header Label
             Label tranBoxlbl = new Label("Transactions");
             tranBoxlbl.setFont(new Font("Georgia", 20));
-            HBox tranListMainHeader = new HBox(tranBoxlbl);
-            tranListMainHeader.setAlignment(Pos.CENTER);
-            tranBoxlbl.setPadding(new Insets(20));
             
             // Creating Table Header Layout
             GridPane tranLabelsBox = new GridPane();
             
             // Column Constraints (percentages for consistent alignment)
             ColumnConstraints col1 = new ColumnConstraints();
-            col1.setPercentWidth(16.67);
+            col1.setPercentWidth(14.2);
             col1.setHalignment(HPos.CENTER);  // acc name
 
             ColumnConstraints col2 = new ColumnConstraints();
-            col2.setPercentWidth(16.67);
+            col2.setPercentWidth(14.2);
             col2.setHalignment(HPos.CENTER); // transaction type
 
             ColumnConstraints col3 = new ColumnConstraints();
-            col3.setPercentWidth(16.67);
+            col3.setPercentWidth(14.2);
             col3.setHalignment(HPos.CENTER); // date
 
             ColumnConstraints col4 = new ColumnConstraints();
-            col4.setPercentWidth(16.67);
+            col4.setPercentWidth(14.2);
             col4.setHalignment(HPos.CENTER); // desc
 
             ColumnConstraints col5 = new ColumnConstraints();
-            col5.setPercentWidth(16.67);
+            col5.setPercentWidth(14.2);
             col5.setHalignment(HPos.CENTER); // payment amount
 
             ColumnConstraints col6 = new ColumnConstraints();
-            col6.setPercentWidth(16.67);
+            col6.setPercentWidth(14.2);
             col6.setHalignment(HPos.CENTER); // deposit amount
+            
+            ColumnConstraints col7 = new ColumnConstraints();
+            col6.setPercentWidth(14.2);
+            col6.setHalignment(HPos.CENTER); // button column
 
-            tranLabelsBox.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6);
+            tranLabelsBox.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6, col7);
             
             // Create Labels
             Label tranBoxNamelbl = new Label("Account Name");
@@ -508,46 +554,72 @@ public class Main extends Application {
             Label tranBoxDesclbl = new Label("Description");
             Label tranBoxPaylbl = new Label("Payment Amount");
             Label tranBoxDeplbl = new Label("Deposit Amount");
+            Label emptylbl = new Label("");
             
-            Label[] labelsList = {tranBoxNamelbl, tranBoxTypelbl, tranBoxDatebl, tranBoxDesclbl, tranBoxPaylbl, tranBoxDeplbl};
+            Label[] labelsList = {tranBoxNamelbl, tranBoxTypelbl, tranBoxDatebl, tranBoxDesclbl, tranBoxPaylbl, tranBoxDeplbl, emptylbl};
             for (Label i : labelsList) {
             	i.setFont(smaller);
             	i.setWrapText(true);
             }
         
             // Set headers
-            tranLabelsBox.add(tranBoxNamelbl, 0, 0);
-            tranLabelsBox.add(tranBoxTypelbl, 1, 0);
-            tranLabelsBox.add(tranBoxDatebl, 2, 0);
-            tranLabelsBox.add(tranBoxDesclbl, 3, 0);
-            tranLabelsBox.add(tranBoxPaylbl, 4, 0);
-            tranLabelsBox.add(tranBoxDeplbl, 5, 0);
+            tranLabelsBox.getChildren().addAll(tranBoxNamelbl, tranBoxTypelbl, tranBoxDatebl, tranBoxDesclbl, tranBoxPaylbl, tranBoxDeplbl, emptylbl);
             
-            tranLabelsBox.setAlignment(Pos.CENTER);
-            tranLabelsBox.setPadding(new Insets(10));
+            // Position Style Nodes
+            GridPane.setConstraints(tranBoxNamelbl, 0, 0);
+            GridPane.setConstraints(tranBoxTypelbl, 1, 0);
+            GridPane.setConstraints(tranBoxDatebl, 2, 0);
+            GridPane.setConstraints(tranBoxDesclbl, 3, 0);
+            GridPane.setConstraints(tranBoxPaylbl, 4, 0);
+            GridPane.setConstraints(tranBoxDeplbl, 5, 0);
+            GridPane.setConstraints(emptylbl, 6, 0);
+            GridPane.setMargin(tranBoxNamelbl, new Insets(20));
+            GridPane.setMargin(tranBoxTypelbl, new Insets(20));
+            GridPane.setMargin(tranBoxDatebl, new Insets(20));
+            GridPane.setMargin(tranBoxDesclbl, new Insets(20));
+            GridPane.setMargin(tranBoxPaylbl, new Insets(20));
+            GridPane.setMargin(tranBoxDeplbl, new Insets(20));
+            GridPane.setMargin(emptylbl, new Insets(20));
+            
+            tranBoxNamelbl.setTextAlignment(TextAlignment.CENTER);
+            tranBoxTypelbl.setTextAlignment(TextAlignment.CENTER);
+            tranBoxDatebl.setTextAlignment(TextAlignment.CENTER);
+            tranBoxDesclbl.setTextAlignment(TextAlignment.CENTER);
+            tranBoxPaylbl.setTextAlignment(TextAlignment.CENTER);
+            tranBoxDeplbl.setTextAlignment(TextAlignment.CENTER);
+            emptylbl.setTextAlignment(TextAlignment.CENTER);
+            
+            tranBoxNamelbl.setMinWidth(100);
+            
+            tranLabelsBox.setAlignment(Pos.TOP_CENTER);
             
             // Creating Table
             GridPane tranDetailsBox = new GridPane();
-            tranDetailsBox.setAlignment(Pos.CENTER);
-            tranDetailsBox.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6);
+            tranDetailsBox.setAlignment(Pos.TOP_CENTER);
+            tranDetailsBox.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6, col7);
+            tranDetailsBox.setVgap(10);
 
             // Populate table
             updateGridPane(tranDetailsBox, seachStringfld.getText(), transactions);
+            
+            for(int i = 0; i < tranDetailsBox.getRowCount(); ++i) {
+            	Button button = new Button("EDIT");
+            	tranDetailsBox.add(button, 6, i);
+                button.setOnAction(event -> {
+                	Scene TransactionPage = transtart(stage, transactions.get(tranDetailsBox.getRowIndex(button)));
+                	stage.setScene(TransactionPage);
+                });
+            }
 
             // Table Creation
-            VBox tranListBox = new VBox(10);
-            tranListBox.getChildren().addAll(tranLabelsBox, tranDetailsBox);
+            VBox tranListBox = new VBox();
+            tranListBox.getChildren().addAll(tranBoxlbl, tranLabelsBox, tranDetailsBox);
             tranListBox.setAlignment(Pos.TOP_CENTER);
-            tranListBox.setPadding(new Insets(20));
-
-            // Main layout
-            BorderPane main = new BorderPane();
-            main.setTop(tranListMainHeader);
-            main.setCenter(tranListBox);
+            tranListBox.setPadding(new Insets(30));
 
             BorderPane root = new BorderPane();
             root.setTop(header);
-            root.setCenter(main);
+            root.setCenter(tranListBox);
             
             searchbtn.setOnAction(event -> {
             	updateGridPane(tranDetailsBox, seachStringfld.getText(), transactions);
@@ -670,10 +742,24 @@ public class Main extends Application {
 
         Scene scheTransPage = new Scene(TranaccRoot, 1000, 500);
         Tranreturnbtn.setOnAction(event -> {
-            stage.setScene(mainScene);
+        	if(editable != null) {
+        		Scene ShowScheTran = showScheStart(stage);
+        		stage.setScene(ShowScheTran);
+        		
+        	}
+        	else {
+        		stage.setScene(mainScene);
+        	}
         });
         Trancancelbtn.setOnAction(event -> {
-            stage.setScene(mainScene);
+        	if(editable != null) {
+        		Scene ShowScheTran = showScheStart(stage);
+        		stage.setScene(ShowScheTran);
+        		
+        	}
+        	else {
+        		stage.setScene(mainScene);
+        	}
         });
         Transavebtn.setOnAction(event -> {
             try {
@@ -684,17 +770,14 @@ public class Main extends Application {
                     if (Double.parseDouble(Tranpaynum.getText()) == 0.00) {
                         Tranerrorlbl.setText("Payment field empty");
                     }
-                    
-                    Boolean duplicate = false;
+
                     for(ScheduledTransaction element: scheTransactions) {
                     	if(element.getName().equals(scheduleName)) {
-                    		duplicate = true;
+                    		if(editable == null || element.getName() != editable.getName()) {
+                    			Tranerrorlbl.setText("Schedule name already exists");
+                                return;
+                    		}
                     	}
-                    }
-                    
-                    if (editable == null && duplicate) {
-                        Tranerrorlbl.setText("Schedule name already exists");
-                        return;
                     }
 
                     int dueDate;
@@ -731,9 +814,15 @@ public class Main extends Application {
                     
 
                     Tranerrorlbl.setText("Scheduled transaction saved!");
-
-                    stage.setScene(mainScene);
-
+                    
+                	if(editable != null) {
+                		Scene ShowScheTran = showScheStart(stage);
+                		stage.setScene(ShowScheTran);
+                		
+                	}
+                	else {
+                		stage.setScene(mainScene);
+                	}
 
                     Transchfld.clear();
                     Tranpaynum.setText("0.00");
@@ -994,6 +1083,7 @@ public class Main extends Application {
     					str = str.concat("0");
     				}
     				Label temp = new Label(str);
+    				temp.setTextAlignment(TextAlignment.CENTER);
     				table.getChildren().add(temp);
     				GridPane.setConstraints(temp, j, i);
     			}

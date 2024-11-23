@@ -225,7 +225,8 @@ public class Main extends Application {
             accountBox.setPadding(new Insets(30));
             accDetailsBox.setAlignment(Pos.TOP_CENTER);
             accLabelsBox.setAlignment(Pos.TOP_CENTER);
-
+	    accDetailsBox.setVgap(10);
+		
             accountBox.getChildren().addAll(accLabelsBox, accDetailsBox);
 
             // Formatting Style Nodes

@@ -30,6 +30,18 @@ public class Transaction implements CSVWritable {
         this.paymentAmt = Double.parseDouble(data.remove(0).toString());
         this.depositAmt = Double.parseDouble(data.remove(0).toString());
     }
+    
+	public String getDescription() {
+		return desc;
+	}
+	
+	public LocalDate getDate() {
+		return transDate;
+	}
+	
+	public String searchString() {
+		return desc;
+	}
 
     @Override
     public ArrayList<String> toArrayList() {
@@ -43,4 +55,8 @@ public class Transaction implements CSVWritable {
         return temp;
     }
 
+	@Override
+	public int compareTo(CSVWritable object) {
+		return transDate.compareTo(((Transaction) object).getDate());
+	}
 }

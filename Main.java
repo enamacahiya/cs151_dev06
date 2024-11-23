@@ -444,7 +444,7 @@ public class Main extends Application {
                         Tranerrorlbl.setText("Payment or Deposit field empty");
                     } 
                     else {
-                    	if(editable != null) {
+                    	if(editable == null) {
                         Transaction newTran = new Transaction(Tranaccfld2.getValue(), Tranaccfld.getValue(),
                                 Trandatepkr.getValue(), Trandescfld.getText(),
                                 Double.parseDouble(Tranpaynum.getText()), Double.parseDouble(Trandepnum.getText()));
@@ -601,15 +601,7 @@ public class Main extends Application {
 
             // Populate table
             updateGridPane(tranDetailsBox, seachStringfld.getText(), transactions);
-            
-            for(int i = 0; i < tranDetailsBox.getRowCount(); ++i) {
-            	Button button = new Button("EDIT");
-            	tranDetailsBox.add(button, 6, i);
-                button.setOnAction(event -> {
-                	Scene TransactionPage = transtart(stage, transactions.get(tranDetailsBox.getRowIndex(button)));
-                	stage.setScene(TransactionPage);
-                });
-            }
+            addButtons(stage, tranDetailsBox, transactions.get(0));
 
             // Table Creation
             VBox tranListBox = new VBox();
@@ -623,6 +615,7 @@ public class Main extends Application {
             
             searchbtn.setOnAction(event -> {
             	updateGridPane(tranDetailsBox, seachStringfld.getText(), transactions);
+            	addButtons(stage, tranDetailsBox, transactions.get(0));
             });
 
             // Return button action
@@ -1028,14 +1021,7 @@ public class Main extends Application {
         
         updateGridPane(scheTranDetailsBox, seachStringfld.getText(), scheTransactions);
         
-        for(int i = 0; i < scheTranDetailsBox.getRowCount(); ++i) {
-        	Button button = new Button("EDIT");
-        	scheTranDetailsBox.add(button, 6, i);
-            button.setOnAction(event -> {
-            	Scene scheTransPage = schestart(stage, scheTransactions.get(scheTranDetailsBox.getRowIndex(button)));
-            	stage.setScene(scheTransPage);
-            });
-        }
+        addButtons(stage, scheTranDetailsBox, scheTransactions.get(0));
         
         // Sets BG colors
         returnBox.setStyle("-fx-background-color: #dcebfc;");
@@ -1048,6 +1034,7 @@ public class Main extends Application {
         
         searchbtn.setOnAction(event -> {
         	updateGridPane(scheTranDetailsBox, seachStringfld.getText(), scheTransactions);
+            addButtons(stage, scheTranDetailsBox, scheTransactions.get(0));
         });
         
         returnbtn.setOnAction(event -> {
@@ -1074,6 +1061,7 @@ public class Main extends Application {
     public void updateGridPane(GridPane table, String searchString, ArrayList<? extends CSVWritable> list) {
     	table.getChildren().clear();
     	Collections.sort(list);
+    	int counter = 0;
     	for(int i = 0; i < list.size(); ++i) {
     		if(list.get(i).searchString().toLowerCase().contains(searchString.toLowerCase())) {
     			ArrayList<String> details = list.get(i).toArrayList();
@@ -1085,10 +1073,28 @@ public class Main extends Application {
     				Label temp = new Label(str);
     				temp.setTextAlignment(TextAlignment.CENTER);
     				table.getChildren().add(temp);
-    				GridPane.setConstraints(temp, j, i);
+    				GridPane.setConstraints(temp, j, counter);
     			}
+    			++counter;
     		}
     	}
+    }
+    
+    public void addButtons(Stage stage, GridPane table, CSVWritable object) {
+        for(int i = 0; i < table.getRowCount(); ++i) {
+        	Button button = new Button("EDIT");
+        	table.add(button, 6, i);
+            button.setOnAction(event -> {
+            	if(object.getClass() == Transaction.class) {
+            		Scene newPage = transtart(stage, transactions.get(table.getRowIndex(button)));
+            		stage.setScene(newPage);
+            	}
+            	else {
+            		Scene newPage = schestart(stage, scheTransactions.get(table.getRowIndex(button)));
+            		stage.setScene(newPage);
+            	}
+            });
+        }
     }
     
     @Override

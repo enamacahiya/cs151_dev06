@@ -214,8 +214,8 @@ public class Main extends Application {
             accountBox.setPadding(new Insets(30));
             accDetailsBox.setAlignment(Pos.TOP_CENTER);
             accLabelsBox.setAlignment(Pos.TOP_CENTER);
-	    accDetailsBox.setVgap(10);
-		
+            accDetailsBox.setVgap(10);
+
             accountBox.getChildren().addAll(accLabelsBox, accDetailsBox);
 
             // Formatting Style Nodes
@@ -602,7 +602,7 @@ public class Main extends Application {
 
             // Populate table
             updateGridPane(tranDetailsBox, seachStringfld.getText(), transactions);
-            addButtons(stage, tranDetailsBox, transactions.get(0));
+            addButtons(stage, tranDetailsBox, Transaction.class);
 
             // Table Creation
             VBox tranListBox = new VBox();
@@ -616,7 +616,7 @@ public class Main extends Application {
             
             searchbtn.setOnAction(event -> {
             	updateGridPane(tranDetailsBox, seachStringfld.getText(), transactions);
-            	addButtons(stage, tranDetailsBox, transactions.get(0));
+            	addButtons(stage, tranDetailsBox, Transaction.class);
             });
 
             // Return button action
@@ -1022,7 +1022,7 @@ public class Main extends Application {
         
         updateGridPane(scheTranDetailsBox, seachStringfld.getText(), scheTransactions);
         
-        addButtons(stage, scheTranDetailsBox, scheTransactions.get(0));
+        addButtons(stage, scheTranDetailsBox, ScheduledTransaction.class);
         
         // Sets BG colors
         returnBox.setStyle("-fx-background-color: #dcebfc;");
@@ -1035,7 +1035,7 @@ public class Main extends Application {
         
         searchbtn.setOnAction(event -> {
         	updateGridPane(scheTranDetailsBox, seachStringfld.getText(), scheTransactions);
-            addButtons(stage, scheTranDetailsBox, scheTransactions.get(0));
+            addButtons(stage, scheTranDetailsBox, ScheduledTransaction.class);
         });
         
         returnbtn.setOnAction(event -> {
@@ -1081,12 +1081,12 @@ public class Main extends Application {
     	}
     }
     
-    public void addButtons(Stage stage, GridPane table, CSVWritable object) {
+    public void addButtons(Stage stage, GridPane table, Class object) {
         for(int i = 0; i < table.getRowCount(); ++i) {
         	Button button = new Button("EDIT");
         	table.add(button, 6, i);
             button.setOnAction(event -> {
-            	if(object.getClass() == Transaction.class) {
+            	if(object == Transaction.class) {
             		Scene newPage = transtart(stage, transactions.get(table.getRowIndex(button)));
             		stage.setScene(newPage);
             	}

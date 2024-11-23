@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -26,6 +27,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
@@ -41,10 +43,19 @@ public class Main extends Application {
     DAL transactionotypeDAL = new DAL("TransactionTypes");
     DAL transactionDAL = new DAL("Transactions");
     DAL scheduledtransactionDAL = new DAL("ScheduledTransactions");
+    
+    static Rectangle2D screen = Screen.getPrimary().getVisualBounds();
+    
+    private static final double SCREEN_WIDTH = screen.getWidth() * 4/5;
+    private static final double SCREEN_HEIGHT = screen.getHeight() * 4/5;
+    
+    
 
     @Override
     public void start(Stage stage) throws IOException {
         try {
+        	stage.setWidth(SCREEN_WIDTH);
+        	stage.setHeight(SCREEN_HEIGHT);
             for (ArrayList<String> element : accountDAL.fileReader()) {
                 accounts.add(new Account(element));
             }
@@ -123,7 +134,7 @@ public class Main extends Application {
             accRoot.setCenter(accData);
             accRoot.setTop(returnBox);
 
-            Scene accountPage = new Scene(accRoot, 1000, 500);
+            Scene accountPage = new Scene(accRoot, SCREEN_WIDTH, SCREEN_HEIGHT);
 
             Scene TranTypePage = tranTypeStart(stage);
 
@@ -230,7 +241,7 @@ public class Main extends Application {
             root.setCenter(accountBox);
 
             // Scene creator (width, height)
-            mainScene = new Scene(root, 1000, 500);
+            mainScene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
             stage.setScene(mainScene);
 
             updateGridPane(accDetailsBox, "", accounts);
@@ -418,7 +429,7 @@ public class Main extends Application {
             TranaccRoot.setCenter(TranaccData);
             TranaccRoot.setTop(TranreturnBox);
 
-            Scene TransactionPage = new Scene(TranaccRoot, 1000, 500);
+            Scene TransactionPage = new Scene(TranaccRoot, SCREEN_WIDTH, SCREEN_HEIGHT);
             Tranreturnbtn.setOnAction(event -> {
             	if(editable != null) {
             		Scene TranListPage = tranListStart(stage);
@@ -589,7 +600,7 @@ public class Main extends Application {
             tranBoxDeplbl.setTextAlignment(TextAlignment.CENTER);
             emptylbl.setTextAlignment(TextAlignment.CENTER);
             
-            tranBoxNamelbl.setMinWidth(100);
+
             
             tranLabelsBox.setAlignment(Pos.TOP_CENTER);
             
@@ -623,7 +634,7 @@ public class Main extends Application {
                 stage.setScene(mainScene);
             });
 
-            Scene TranListPage = new Scene(root, 1000, 500);
+            Scene TranListPage = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
             return TranListPage;
         
         } catch (Exception e) {
@@ -733,7 +744,7 @@ public class Main extends Application {
         TranaccRoot.setCenter(TranaccData);
         TranaccRoot.setTop(TranreturnBox);
 
-        Scene scheTransPage = new Scene(TranaccRoot, 1000, 500);
+        Scene scheTransPage = new Scene(TranaccRoot, SCREEN_WIDTH, SCREEN_HEIGHT);
         Tranreturnbtn.setOnAction(event -> {
         	if(editable != null) {
         		Scene ShowScheTran = showScheStart(stage);
@@ -925,7 +936,7 @@ public class Main extends Application {
             stage.setScene(mainScene);
         });
 
-        Scene TranTypePage = new Scene(root, 1000, 500);
+        Scene TranTypePage = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         return TranTypePage;
     }
@@ -1030,7 +1041,7 @@ public class Main extends Application {
         scheTranRoot.setTop(returnBox);
         scheTranRoot.setCenter(scheTranBox);
         
-        Scene showScheTranPage = new Scene(scheTranRoot, 1000, 500);
+        Scene showScheTranPage = new Scene(scheTranRoot, SCREEN_WIDTH, SCREEN_HEIGHT);
         
         searchbtn.setOnAction(event -> {
         	updateGridPane(scheTranDetailsBox, seachStringfld.getText(), scheTransactions);

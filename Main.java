@@ -147,23 +147,40 @@ public class Main extends Application {
             // Menu buttons & labels
             Label acclbl = new Label("Accounts");
             Label tranlbl = new Label("Transactions");
+            Label reportlbl = new Label("Reports");
             Button accbtn = new Button("Create New Account");
             Button tranbtn = new Button("Enter Transaction");
             Button trantypebtn = new Button("Create Transaction Type");
             Button tranlistbtn  = new Button("Show Transactions");
             Button schedulebtn = new Button("Create Scheduled Transaction");
             Button upcomingbtn = new Button("Show Scheduled Transactions");
-
+            Button accreportbtn = new Button("Transactions by account");
+            Button trantypereportbtn = new Button("Transactions by type");
+            
+            ComboBox<String> accreportbox = new ComboBox();
+            ComboBox<String> trantypebox = new ComboBox();
+            
+            for (Account element: accounts) {
+            	accreportbox.getItems().add(element.getAccName());
+            }
+            for (TransactionType element: transactiontypes) {
+            	trantypebox.getItems().add(element.getTransactionName());
+            }
+            accreportbox.setValue(accreportbox.getItems().get(0));
+            trantypebox.setValue(trantypebox.getItems().get(0));
 
             acclbl.setFont(normal);
             tranlbl.setFont(normal);
+            reportlbl.setFont(normal);
             accbtn.setFont(button);
             tranbtn.setFont(button);
             schedulebtn.setFont(button);
             trantypebtn.setFont(button);
             upcomingbtn.setFont(button);
             tranlistbtn.setFont(button);
-
+            accreportbtn.setFont(button);
+            trantypereportbtn.setFont(button);
+            
             // Account Info Display labels
             Label accBoxlbl = new Label("Accounts");
             Label accBoxNamelbl = new Label("Account Name");
@@ -199,8 +216,9 @@ public class Main extends Application {
 
             // Filling Style Nodes
             nav.getChildren().addAll(home, notif);
-            menu.getChildren().addAll(acclbl, accbtn, tranlbl, tranbtn, trantypebtn,
-            		tranlistbtn, schedulebtn, upcomingbtn);
+            menu.getChildren().addAll(acclbl, accbtn, 
+            		tranlbl, tranbtn, trantypebtn, tranlistbtn, schedulebtn, upcomingbtn, 
+            		reportlbl, accreportbtn, accreportbox, trantypereportbtn, trantypebox);
             accLabelsBox.getChildren().addAll(accBoxlbl, accBoxNamelbl, accBoxDatelbl, accBoxBallbl);
 
             // Position Style Nodes
@@ -250,6 +268,22 @@ public class Main extends Application {
             Stage primaryStage = stage;
             // Transition button(s) implementation
             home.setOnAction(event -> primaryStage.setScene(mainScene));
+            accreportbtn.setOnAction(event -> {
+            	Scene reportPage = tranReport(stage, accreportbox.getValue(), null);
+                primaryStage.setScene(reportPage);
+                errorlbl.setText("");
+                accNamefld.clear();
+                datepkr.setValue(LocalDate.now());
+                balnum.setText("0.00");
+            });
+            trantypereportbtn.setOnAction(event -> {
+            	Scene reportPage = tranReport(stage, null, trantypebox.getValue());
+                primaryStage.setScene(reportPage);
+                errorlbl.setText("");
+                accNamefld.clear();
+                datepkr.setValue(LocalDate.now());
+                balnum.setText("0.00");
+            });
             tranbtn.setOnAction(event -> {
                 Scene TransactionPage = transtart(stage, null);
                 primaryStage.setScene(TransactionPage);
@@ -1054,6 +1088,169 @@ public class Main extends Application {
         });
     	
     	return showScheTranPage;
+    }
+    
+    public Scene tranReport(Stage stage, String accountFilter, String tranTypeFilter) {
+        try {
+            // Font
+            Font smaller = new Font("Georgia", 15);
+           
+            // Return Button
+            Button returnbtn = new Button("return");
+            
+            
+            HBox header = new HBox(20);
+            header.getChildren().addAll(returnbtn);
+            header.setPadding(new Insets(10));
+            
+            // Set background color
+            header.setStyle("-fx-background-color: #dcebfc;");
+
+            // Header Label
+            Label tranBoxlbl = new Label("Transactions");
+            tranBoxlbl.setFont(new Font("Georgia", 20));
+            
+            // Creating Table Header Layout
+            GridPane tranLabelsBox = new GridPane();
+            
+            // Column Constraints (percentages for consistent alignment)
+            ColumnConstraints col1 = new ColumnConstraints();
+            col1.setPercentWidth(14.2);
+            col1.setHalignment(HPos.CENTER);  // acc name
+
+            ColumnConstraints col2 = new ColumnConstraints();
+            col2.setPercentWidth(14.2);
+            col2.setHalignment(HPos.CENTER); // transaction type
+
+            ColumnConstraints col3 = new ColumnConstraints();
+            col3.setPercentWidth(14.2);
+            col3.setHalignment(HPos.CENTER); // date
+
+            ColumnConstraints col4 = new ColumnConstraints();
+            col4.setPercentWidth(14.2);
+            col4.setHalignment(HPos.CENTER); // desc
+
+            ColumnConstraints col5 = new ColumnConstraints();
+            col5.setPercentWidth(14.2);
+            col5.setHalignment(HPos.CENTER); // payment amount
+
+            ColumnConstraints col6 = new ColumnConstraints();
+            col6.setPercentWidth(14.2);
+            col6.setHalignment(HPos.CENTER); // deposit amount
+
+            tranLabelsBox.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6);
+            
+            // Create Labels
+            Label tranBoxNamelbl = new Label("Account Name");
+            Label tranBoxTypelbl = new Label("Transaction Type");
+            Label tranBoxDatebl = new Label("Date");
+            Label tranBoxDesclbl = new Label("Description");
+            Label tranBoxPaylbl = new Label("Payment Amount");
+            Label tranBoxDeplbl = new Label("Deposit Amount");
+            Label emptylbl = new Label("");
+            
+            Label[] labelsList = {tranBoxNamelbl, tranBoxTypelbl, tranBoxDatebl, tranBoxDesclbl, tranBoxPaylbl, tranBoxDeplbl, emptylbl};
+            for (Label i : labelsList) {
+            	i.setFont(smaller);
+            	i.setWrapText(true);
+            }
+            
+            if(accountFilter != null) {
+            	tranLabelsBox.getChildren().addAll(tranBoxTypelbl, tranBoxDatebl, tranBoxDesclbl, tranBoxPaylbl, tranBoxDeplbl, emptylbl);
+                GridPane.setConstraints(tranBoxNamelbl, 0, 0);
+            }
+            else {
+            	tranLabelsBox.getChildren().addAll(tranBoxNamelbl, tranBoxDatebl, tranBoxDesclbl, tranBoxPaylbl, tranBoxDeplbl, emptylbl);
+                GridPane.setConstraints(tranBoxTypelbl, 0, 0);
+            }
+            
+            // Position Style Nodes
+            GridPane.setConstraints(tranBoxDatebl, 1, 0);
+            GridPane.setConstraints(tranBoxDesclbl, 2, 0);
+            GridPane.setConstraints(tranBoxPaylbl, 3, 0);
+            GridPane.setConstraints(tranBoxDeplbl, 4, 0);
+            GridPane.setConstraints(emptylbl, 5, 0);
+            GridPane.setMargin(tranBoxNamelbl, new Insets(20));
+            GridPane.setMargin(tranBoxTypelbl, new Insets(20));
+            GridPane.setMargin(tranBoxDatebl, new Insets(20));
+            GridPane.setMargin(tranBoxDesclbl, new Insets(20));
+            GridPane.setMargin(tranBoxPaylbl, new Insets(20));
+            GridPane.setMargin(tranBoxDeplbl, new Insets(20));
+            GridPane.setMargin(emptylbl, new Insets(20));
+            
+            tranBoxNamelbl.setTextAlignment(TextAlignment.CENTER);
+            tranBoxTypelbl.setTextAlignment(TextAlignment.CENTER);
+            tranBoxDatebl.setTextAlignment(TextAlignment.CENTER);
+            tranBoxDesclbl.setTextAlignment(TextAlignment.CENTER);
+            tranBoxPaylbl.setTextAlignment(TextAlignment.CENTER);
+            tranBoxDeplbl.setTextAlignment(TextAlignment.CENTER);
+            emptylbl.setTextAlignment(TextAlignment.CENTER);
+            
+
+            
+            tranLabelsBox.setAlignment(Pos.TOP_CENTER);
+            
+            // Creating Table
+            GridPane tranDetailsBox = new GridPane();
+            tranDetailsBox.setAlignment(Pos.TOP_CENTER);
+            tranDetailsBox.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6);
+            tranDetailsBox.setVgap(10);
+
+            // Populate table
+            ArrayList<Transaction> filtered = new ArrayList<>();
+            for(Transaction element: transactions) {
+            	if(accountFilter != null && element.getAccount().contains(accountFilter)) {
+            		filtered.add(element);
+            	}
+            	else if (tranTypeFilter != null && element.getTranType().contains(tranTypeFilter)) {
+            		filtered.add(element);
+            	}
+            }
+            int counter = 0;
+            for(Transaction element: filtered) {
+            	ArrayList<String> details = element.toArrayList();
+            	if(accountFilter != null) {
+            		details.remove(0);
+            	}
+            	else {
+            		details.remove(1);
+            	}
+            	for(int i = 0; i < details.size(); ++i) {
+    				String str = details.get(i);
+    				if(str.length() > 2 && str.charAt(str.length() - 2) == '.') {
+    					str = str.concat("0");
+    				}
+    				Label temp = new Label(str);
+    				temp.setTextAlignment(TextAlignment.CENTER);
+    				tranDetailsBox.getChildren().add(temp);
+    				GridPane.setConstraints(temp, i, counter);
+            	}
+            	++counter;
+            }
+            //addButtons(stage, tranDetailsBox, Transaction.class, seachStringfld.getText());
+
+            // Table Creation
+            VBox tranListBox = new VBox();
+            tranListBox.getChildren().addAll(tranBoxlbl, tranLabelsBox, tranDetailsBox);
+            tranListBox.setAlignment(Pos.TOP_CENTER);
+            tranListBox.setPadding(new Insets(30));
+
+            BorderPane root = new BorderPane();
+            root.setTop(header);
+            root.setCenter(tranListBox);
+
+            // Return button action
+            returnbtn.setOnAction(event -> {
+                stage.setScene(mainScene);
+            });
+
+            Scene TranListPage = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
+            return TranListPage;
+        
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
     
     public class FixedDecimalConverter extends DoubleStringConverter {

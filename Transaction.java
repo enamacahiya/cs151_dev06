@@ -42,6 +42,14 @@ public class Transaction implements CSVWritable {
 	public String searchString() {
 		return desc;
 	}
+	
+	public String getAccount() {
+		return accName;
+	}
+	
+	public String getTranType() {
+		return transName;
+	}
 
     @Override
     public ArrayList<String> toArrayList() {

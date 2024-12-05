@@ -824,7 +824,7 @@ public class Main extends Application {
                     try {
                         dueDate = Integer.parseInt(dueDateStr);
                         if (dueDate < 1 || dueDate > 31) {
-                            Tranerrorlbl.setText("Due daye must be between 1 and 31.");
+                            Tranerrorlbl.setText("Due day must be between 1 and 31.");
                             return;
                         }
                     } catch (NumberFormatException e) {

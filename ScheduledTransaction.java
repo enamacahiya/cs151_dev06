@@ -36,6 +36,10 @@ public class ScheduledTransaction implements CSVWritable{
 		return schedName;
 	}
 	
+	public int dayDue() {
+		return dueDate;
+	}
+	
 	public ArrayList<String> toArrayList() {
 		ArrayList<String> data = new ArrayList<>();
 		data.add(schedName);

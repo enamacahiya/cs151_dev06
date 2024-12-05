@@ -33,12 +33,12 @@ import javafx.util.converter.DoubleStringConverter;
 
 public class Main extends Application {
     private Scene mainScene;
-
+    
     ArrayList<Account> accounts = new ArrayList<Account>();
     ArrayList<TransactionType> transactiontypes = new ArrayList<TransactionType>();
     ArrayList<Transaction> transactions = new ArrayList<Transaction>();
     ArrayList<ScheduledTransaction> scheTransactions = new ArrayList<ScheduledTransaction>();
-
+    
     DAL accountDAL = new DAL("Accounts");
     DAL transactionotypeDAL = new DAL("TransactionTypes");
     DAL transactionDAL = new DAL("Transactions");
@@ -48,7 +48,7 @@ public class Main extends Application {
     
     private static final double SCREEN_WIDTH = screen.getWidth() * 4/5;
     private static final double SCREEN_HEIGHT = screen.getHeight() * 4/5;
-
+    
     @Override
     public void start(Stage stage) throws IOException {
         try {
@@ -85,7 +85,7 @@ public class Main extends Application {
             Label accPagelbl = new Label("Define New Account");
             accPagelbl.setFont(normal);
 
-            Label accNamelbl = new Label("Account Name ");
+            Label accNamelbl = new Label("Account Name");
             accNamelbl.setFont(normal);
             TextField accNamefld = new TextField();
 
@@ -120,7 +120,7 @@ public class Main extends Application {
             dataBtns.getChildren().addAll(savebtn, cancelbtn);
             dataBtns.setAlignment(Pos.CENTER);
             accData.getChildren().addAll(dataBtns, errorlbl);
-
+            
             returnBox.getChildren().add(returnbtn);
             returnBox.setPadding(new Insets(10));
 
@@ -146,6 +146,7 @@ public class Main extends Application {
             Label acclbl = new Label("Accounts");
             Label tranlbl = new Label("Transactions");
             Label reportlbl = new Label("Reports");
+            
             Button accbtn = new Button("Create New Account");
             Button tranbtn = new Button("Enter Transaction");
             Button trantypebtn = new Button("Create Transaction Type");
@@ -356,6 +357,8 @@ public class Main extends Application {
             // Adds scene into the stage and shows it
             primaryStage.setScene(mainScene);
             primaryStage.show();
+            
+			notificationWindow();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1221,7 +1224,6 @@ public class Main extends Application {
             // Return Button
             Button returnbtn = new Button("return");
             
-            
             HBox header = new HBox(20);
             header.getChildren().addAll(returnbtn);
             header.setPadding(new Insets(10));
@@ -1391,6 +1393,53 @@ public class Main extends Application {
             e.printStackTrace();
             return null;
         }
+    }
+    
+    public void notificationWindow() {
+    	Stage windowStage = new Stage();
+    	
+        Font normal = new Font("Calibri", 20);
+        Font title = new Font("Georgia", 25);
+    	
+    	Button closebtn = new Button("Close");
+    	closebtn.setOnAction(event -> windowStage.close());
+    	
+        HBox header = new HBox(20);
+        header.setPadding(new Insets(10));
+        header.setStyle("-fx-background-color: #dcebfc;");
+        header.getChildren().addAll(closebtn);
+        
+        VBox names = new VBox(10);
+        names.setPadding(new Insets(10));
+        
+        LocalDate today = LocalDate.now();
+        int day = today.getDayOfMonth();
+        
+        Label namesTitle = new Label("Scheduled Transactions Due");
+        namesTitle.setFont(title);
+        
+        names.getChildren().add(namesTitle);
+        
+        for(ScheduledTransaction element: scheTransactions) {
+        	if(element.dayDue() == day) {
+                Label temp = new Label(element.getName());
+                temp.setFont(normal);
+                names.getChildren().add(temp);
+        	}
+        }
+        
+        names.setAlignment(Pos.TOP_CENTER);
+    	
+        BorderPane root = new BorderPane();
+        root.setCenter(names);
+        root.setTop(header);
+    	
+        windowStage.setWidth(SCREEN_WIDTH / 2);
+        windowStage.setHeight(SCREEN_HEIGHT / 2);
+    	
+    	Scene windowScene = new Scene (root, 200, 150);
+    	windowStage.setScene(windowScene);
+    	windowStage.show();
     }
     
     public class FixedDecimalConverter extends DoubleStringConverter {

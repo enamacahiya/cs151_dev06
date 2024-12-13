@@ -3,6 +3,7 @@
 A desktop application designed for personal budgeting that is secure, user-friendly, and feature-rich. This software allows users to manage their bank accounts, track transactions, and receive timely reminders for scheduled dues. It is a safe and affordable alternative to existing commercial and online personal budgeting systems.
 
 **Collaborators**: Joshua Rose, Alison Schonauer, Ena Macahiya, Xuhang Wu
+- CS151 San Jose State University Term Project
 
 ---
 
